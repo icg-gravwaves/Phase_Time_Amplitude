@@ -88,18 +88,16 @@ while len(all_keys)<=args.samples:
         snr_sp += normal_sp
         snr_sc += normal_sc
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
+        # Values obtained from modelling time and phase unc.
         p_unc = 2.28603408/data[ifo]['snr']
         t_unc = 0.00349879/data[ifo]['snr']
         rho = 0.8706196941537633
-        normal_dp = np.empty(fsize)
-        normal_dt = np.empty(fsize)
-        for i in range(fsize):
-            cov = np.array([[p_unc[i]**2, rho*p_unc[i]*t_unc[i]],
-                            [rho*p_unc[i]*t_unc[i], t_unc[i]**2]])
-            dp, dt = rng.multivariate_normal([0, 0], cov)
-            normal_dp[i] = dp
-            normal_dt[i] = dt
-    
+        # Cholensky Decomposition
+        l22_factor = np.sqrt(1.0 - rho**2)
+        z_p = rng.standard_normal(size=fsize)
+        z_t = rng.standard_normal(size=fsize)
+        normal_dp = p_unc * z_p
+        normal_dt = (rho * t_unc * z_p) + (t_unc * l22_factor * z_t)
         data[ifo]['p'] = data[ifo]['op'] + normal_dp
         data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
         
