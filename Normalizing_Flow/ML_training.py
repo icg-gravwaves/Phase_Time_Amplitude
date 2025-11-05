@@ -32,4 +32,4 @@ for file in files:
     flow = NormalizingFlow(3, bounds=bounds)
     history = flow.fit(data_array, n_samples=100000)
     ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos) })
-    ml_stat.to_file("phasetd_newsnr_%s.h5" % ''.join(ifos), group_name="model")
+    ml_stat.to_file("PHASE_TIME_AMP_%s.h5" % ''.join(ifos), group_name="model")
