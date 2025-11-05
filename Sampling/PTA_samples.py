@@ -40,13 +40,10 @@ np.random.seed(args.seed)
 size = args.batch_size
 
 
-# Store results for each ifo as a reference. The reference ifo is the
-# ifo which gets the smallest amplitude. This allows us to get the correct
-# symmetries handled under ifo switch and apply more consistent treatment
-# of error uncertainties.
+# Store results selecting the first ifo as a reference. The reference ifo is used 
+# to get the correct symmetries when measuring dt, dp and sr for the triggers.
 f = HFile(args.output_file, 'w')
 ifo0 = args.ifos[0]:
-logging.info('Storing results using %s as a reference', ifo0)
 other_ifos = deepcopy(args.ifos)
 other_ifos.remove(ifo0)
 counts = defaultdict(list)
@@ -59,7 +56,10 @@ while len(all_keys)<=args.samples:
     logging.info('generating %s samples', size)
 
     # Choose random sky location and polarizations from
-    # an isotropic population
+    # an isotropic population. Distance is drawn from a 
+    # squared power law distribution. D_max is chosen 
+    # such that the SNR tail is normlaized to commonly 
+    # commonly used values.
     ra = uniform(0, 2 * np.pi, size=size)
     dec = np.arccos(uniform(-1., 1., size=size)) - np.pi/2
     inc = np.arccos(uniform(-1., 1., size=size))
@@ -71,7 +71,8 @@ while len(all_keys)<=args.samples:
     distance = D_max * (uniform_random)**(1/3) 
 
 
-    # calculate the toa, poa, and amplitude of each sample
+    # calculate the toa, poa, and amplitude of each sample,
+    # including uncertainties in measurements.
     data = {}
     for rs, ifo in zip(args.relative_sensitivities, args.ifos):
         data[ifo] = {}
@@ -90,7 +91,7 @@ while len(all_keys)<=args.samples:
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
         
 
-    # Bin the data
+    # Organise the data
     bind = []
     keep = None
     for ifo1 in other_ifos:
@@ -103,13 +104,14 @@ while len(all_keys)<=args.samples:
         bind += [dtbin, dpbin, srbin]
         
             
-       
+    # Measure ntwork SNR.
     snrs_sq=np.zeros(len(data[ifo0]['snr']))
     for ifo in args.ifos:
         snrs_sq += data[ifo]['snr']**2
     net_snr = snrs_sq**0.5
     
-    
+    # Applying thresholding, individual detector SNR > 5,
+    # network SNR > 9.
     keep = None 
     for ifo in args.ifos:
         if keep is None:
@@ -118,9 +120,10 @@ while len(all_keys)<=args.samples:
             keep = keep & (net_snr >= 9) & (data[ifo]['snr']>= 5 )
 
     #Calculate and sum the weights for each bin
-    #use first ifo as reference for weights
+    # use first ifo as reference for weights
     bind = [a[keep] for a in bind]
-    
+
+    # Ensure we arent getting a significant number of events within 5% of D_max
     dist = distance[keep]
     large_dis = 0
     for i in range(len(dist)):
@@ -146,6 +149,7 @@ while len(all_keys)<=args.samples:
 logging.info('Converting to numpy arrays')
 keys = np.array(all_keys)
 
+# Assiging names to each paramater.
 field_names = []
 for ifo in other_ifos:
     field_names.extend([
