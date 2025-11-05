@@ -11,6 +11,7 @@ args = parser.parse_args()
 
 files = args.input_files
 
+# Read in parameter data from files. Also list of ifos and reference detector.
 for file in files:
     with h5py.File(file, "r") as f:
         ifos = f.attrs["ifos"]
@@ -27,9 +28,14 @@ for file in files:
             ])
         for key in keys:
             data[f"{key}"] = f[ifo]["param_bin"][key][:]
+    # Organise data and give bounds used.
     data_array = np.array([v for v in data.values()]).T
     bounds = np.array([data_array.min(0)-1e-6, data_array.max(0)+1e-6]).T
+
+    # Train the Flow on the data.
     flow = NormalizingFlow(3, bounds=bounds)
     history = flow.fit(data_array, n_samples=100000)
+
+    # Save the model paramters to a file to be later used as a lookup.
     ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos) })
     ml_stat.to_file("PHASE_TIME_AMP_%s.h5" % ''.join(ifos), group_name="model")
