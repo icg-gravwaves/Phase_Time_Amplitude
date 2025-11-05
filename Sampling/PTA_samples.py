@@ -81,14 +81,27 @@ while len(all_keys)<=args.samples:
         data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs
         snr_sp = (rs*sp/distance) 
         snr_sc = (rs*sc/distance) 
+        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp)
         fsize = snr_sp.shape
         normal_sp = normal(scale=1, size=fsize)
         normal_sc = normal(scale=1, size=fsize)
         snr_sp += normal_sp
         snr_sc += normal_sc
-        data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0)
-        data[ifo]['p'] = np.arctan2(snr_sc, snr_sp)
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
+        p_unc = 2.28603408/data[ifo]['snr']
+        t_unc = 0.00349879/data[ifo]['snr']
+        rho = 0.8706196941537633
+        normal_dp = np.empty(fsize)
+        normal_dt = np.empty(fsize)
+        for i in range(fsize):
+            cov = np.array([[p_unc[i]**2, rho*p_unc[i]*t_unc[i]],
+                            [rho*p_unc[i]*t_unc[i], t_unc[i]**2]])
+            dp, dt = rng.multivariate_normal([0, 0], cov)
+            normal_dp[i] = dp
+            normal_dt[i] = dt
+    
+        data[ifo]['p'] = data[ifo]['op'] + normal_dp
+        data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
         
 
     # Organise the data
