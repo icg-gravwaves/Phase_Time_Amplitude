@@ -1,8 +1,7 @@
-import argparse, numpy as np, pycbc.detector, logging
+import argparse, h5py, numpy as np, pycbc.detector, logging
 from numpy.random import uniform, normal
 from copy import deepcopy
 from collections import defaultdict
-from pycbc.io import HFile
 
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -14,17 +13,15 @@ parser.add_argument('--relative-sensitivities', nargs='+', type=float,
                          "expected SNR at fixed distance, one for each ifo")
 parser.add_argument('--seed', type=int, default=124)
 parser.add_argument('--output-file', required=True)
-parser.add_argument('--bin-density', type=int, default=1,
-                    help="Number of bins per 1 sigma uncertainty in a "
-                         "parameter. Higher values increase the resolution of "
-                         "the histogram at the expense of storage.")
-parser.add_argument('--timing-uncertainty', type=float, default=.001,
-                    help="Timing uncertainty to set bin size and smoothing "
-                         "interval [default=.001s]")
-parser.add_argument('--snr-uncertainty', type=float, default=1.0,
-                    help="SNR uncertainty to set bin size and smoothing")
 parser.add_argument('--batch-size', type=int, default=1000000)
 parser.add_argument('--samples', type=float, default=300000)
+parser.add_argument('--phase-uncertainty', type=float, default=1.8,
+                    help="Scale factor for phase uncertainty model")
+parser.add_argument('--bandwidth', type=float, default=50,
+                    help="Effective bandwidth of the signal in Hz")
+parser.add_argument('--time-phase-correlation', type=float, default=0.83,
+                    help="Correlation coefficient between time and phase "
+                         "measurement uncertainties")
 args = parser.parse_args()
 
 if len(args.relative_sensitivities) != len(args.ifos):
@@ -42,8 +39,8 @@ size = args.batch_size
 
 # Store results selecting the first ifo as a reference. The reference ifo is used 
 # to get the correct symmetries when measuring dt, dp and sr for the triggers.
-f = HFile(args.output_file, 'w')
-ifo0 = args.ifos[0]:
+f = h5py.File(args.output_file, 'w')
+ifo0 = args.ifos[0]
 other_ifos = deepcopy(args.ifos)
 other_ifos.remove(ifo0)
 counts = defaultdict(list)
@@ -88,17 +85,17 @@ while len(all_keys)<=args.samples:
         snr_sp += normal_sp
         snr_sc += normal_sc
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
-        # Values obtained from modelling time and phase unc.
-        p_unc = 2.28603408/data[ifo]['snr']
-        t_unc = 0.00349879/data[ifo]['snr']
-        rho = 0.8706196941537633
+        # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
+        p_unc = args.phase_uncertainty/data[ifo]['snr']
+        t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])
+        rho = args.time_phase_correlation
         # Cholensky Decomposition
         l22_factor = np.sqrt(1.0 - rho**2)
-        z_p = rng.standard_normal(size=fsize)
-        z_t = rng.standard_normal(size=fsize)
+        z_p = normal(size=fsize)
+        z_t = normal(size=fsize)
         normal_dp = p_unc * z_p
         normal_dt = (rho * t_unc * z_p) + (t_unc * l22_factor * z_t)
-        data[ifo]['p'] = data[ifo]['op'] + normal_dp
+        data[ifo]['p'] = (data[ifo]['op'] + normal_dp) % (2. * np.pi)
         data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
         
 
