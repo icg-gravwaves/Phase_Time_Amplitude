@@ -35,12 +35,34 @@ for file in files:
             data[f"{key}"] = f[ref_ifo]["param_bin"][key][:]
     # Organise data and give bounds used.
     data_array = np.array([v for v in data.values()]).T
-    bounds = np.array([data_array.min(0)-1e-6, data_array.max(0)+1e-6]).T
+    torch.set_default_dtype(torch.float64)
+    def create_bounds(data_array):
+        n_dims = data_array.shape[1]
+        bounds = []
+        smin = np.array([])
+        smax = np.array([])
+        
+        for i in range(n_dims):
+            if i % 3 == 1:  # every second dimension (Phase)
+                bounds.append([0, 2*np.pi])
+            elif i % 3 == 2:
+                bounds.append([data_array[:, i].min() - 1e-6, 
+                            data_array[:, i].max() + 1e-6])
+                smin =np.append(smin, np.exp(data_array[:, i].min() - 1e-6))
+                smax = np.append(smax,np.exp(data_array[:, i].max() + 1e-6))
+            else:
+                bounds.append([data_array[:, i].min() - 1e-6, 
+                            data_array[:, i].max() + 1e-6])
+        
+        return np.array(bounds, dtype=np.float32), smin, smax
 
     # Train the Flow on the data.
-    flow = NormalizingFlow(3, bounds=bounds)
-    history = flow.fit(data_array, n_samples=100000)
-
+    bounds, smin, smax = create_bounds(data_array)
+    flow = NormalizingFlow(len(keys), bounds=bounds)
+    history = flow.fit(data_array, n_samples=300000)
+    srmin = min(smin)
+    srmax = max(smax)
+    hist_max = max(flow.prob(data_array))
     # Save the model paramters to a file to be later used as a lookup.
-    ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos) })
+    ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "smin": srmin, "smax": srmax, "hist_max": hist_max})
     ml_stat.to_file("PHASE_TIME_AMP_%s.h5" % ''.join(ifos), group_name="model")

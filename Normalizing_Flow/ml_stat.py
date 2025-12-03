@@ -140,9 +140,9 @@ class NormalizingFlow(MLModel):
     def fit(
         self,
         x,
-        n_epochs: int = 100,
+        n_epochs: int = 300,
         lr: float = 1e-3,
-        batch_size: int = 500,
+        batch_size: int = 5000,
         validation_fraction: float = 0.2,
         lr_annealing: bool = False,
         n_samples: int = None,
@@ -164,7 +164,7 @@ class NormalizingFlow(MLModel):
         lr_annealing: bool
             Whether to use learning rate annealing. Default is False.
         """
-        x = torch.from_numpy(x).to(self.device)
+        x = torch.tensor(x,dtype=torch.get_default_dtype()).to(self.device)
         # Transform data to unit hypercube
         x_prime = self.fit_data_transform(x)
         # Shuffle data
@@ -279,7 +279,7 @@ class NormalizingFlow(MLModel):
         # Disable gradients to speed up computation
         with torch.no_grad():
             # Convert to torch tensor and move to device
-            x = torch.from_numpy(x).to(self.device)
+            x = torch.tensor(x,dtype=torch.get_default_dtype()).to(self.device)
             log_prob = torch.full((len(x),),-torch.inf)
             in_bounds = self.data_transform.in_bounds(x)
             if not torch.any(in_bounds):

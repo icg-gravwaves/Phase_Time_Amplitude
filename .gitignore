@@ -1,0 +1,8 @@
+# Ignore Python cache folders
+__pycache__/
+
+# Ignore Jupyter Notebook checkpoint folders
+.ipynb_checkpoints/
+
+# Ignore your custom folder
+Files/

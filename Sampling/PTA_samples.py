@@ -15,11 +15,11 @@ parser.add_argument('--seed', type=int, default=124)
 parser.add_argument('--output-file', required=True)
 parser.add_argument('--batch-size', type=int, default=1000000)
 parser.add_argument('--samples', type=float, default=300000)
-parser.add_argument('--phase-uncertainty', type=float, default=1.8,
+parser.add_argument('--phase-uncertainty', type=float, default=2.2,
                     help="Scale factor for phase uncertainty model")
-parser.add_argument('--bandwidth', type=float, default=50,
+parser.add_argument('--bandwidth', type=float, default=30.,
                     help="Effective bandwidth of the signal in Hz")
-parser.add_argument('--time-phase-correlation', type=float, default=0.83,
+parser.add_argument('--time-phase-correlation', type=float, default=0.86,
                     help="Correlation coefficient between time and phase "
                          "measurement uncertainties")
 args = parser.parse_args()
@@ -112,7 +112,7 @@ while len(all_keys)<=args.samples:
         bind += [dtbin, dpbin, srbin]
         
             
-    # Measure ntwork SNR.
+    # Measure network SNR.
     snrs_sq=np.zeros(len(data[ifo0]['snr']))
     for ifo in args.ifos:
         snrs_sq += data[ifo]['snr']**2

@@ -1,0 +1,120 @@
+#!/usr/bin/python
+"""
+Plot log-ratio of counts above IFAR thresholds for two HDFINJFIND files.
+
+"""
+
+import argparse
+import h5py
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def chirp_mass_from(m1, m2):
+    return (m1 * m2)**0.6 / (m1 + m2)**0.2
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Plot log-ratio of IFAR counts above threshold for two HDFINJFIND files."
+    )
+
+    parser.add_argument("--file-one", required=True,
+                        help="First HDFINJFIND file")
+                        
+    parser.add_argument("--file-two", required=True,
+                        help="Second HDFINJFIND file")
+
+    parser.add_argument("--title", default="IFAR Ratio Plot",
+                        help="Plot title")
+
+    parser.add_argument("--output", default=None,
+                        help="Optional output PNG filename")
+
+    parser.add_argument("--xlog", action="store_true",
+                        help="Use log scale for x-axis")
+    parser.add_argument("--ylog", action="store_true",
+                        help="Use log scale for y-axis")
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    # Load file one
+    with h5py.File(args.file_one, "r") as f:
+        ifar1 = f["found/ifar_exc"][:]
+        inj_index1 = f["found/injection_index"][:]
+        m1_1 = f["injections/mass1"][:]
+        m2_1 = f["injections/mass2"][:]
+
+    # Load file two
+    with h5py.File(args.file_two, "r") as f2:
+        ifar2 = f2["found/ifar_exc"][:]
+        inj_index2 = f2["found/injection_index"][:]
+        m1_2 = f2["injections/mass1"][:]
+        m2_2 = f2["injections/mass2"][:]
+
+    chirp1 = chirp_mass_from(m1_1, m2_1)[inj_index1]
+    chirp2 = chirp_mass_from(m1_2, m2_2)[inj_index2]
+
+    chirp_bins = [
+        (2.5, 10.),
+        (10., 20.),
+        (20., 50.),
+        (50., 1000.)
+    ]
+
+    ifar_min = 1e-3
+    ifar_max = 1e4
+    thresholds = np.logspace(np.log10(ifar_min), np.log10(ifar_max), 5000)
+
+    plt.figure(figsize=(10, 7))
+
+    for low, high in chirp_bins:
+        mask1 = (chirp1 >= low) & (chirp1 < high)
+        mask2 = (chirp2 >= low) & (chirp2 < high)
+
+        ifars_1 = ifar1[mask1]
+        ifars_2 = ifar2[mask2]
+
+        if len(ifars_1) == 0 or len(ifars_2) == 0:
+            print(f"Skipping bin {low}-{high} (no triggers)")
+            continue
+
+        counts1 = np.array([(ifars_1 >= thr).sum() for thr in thresholds])
+        counts2 = np.array([(ifars_2 >= thr).sum() for thr in thresholds])
+
+        with np.errstate(divide="ignore", invalid="ignore"):
+            ratio = np.log(counts2 / counts1)
+
+        plt.plot(thresholds, ratio, label=f"{low}-{high} M⊙")
+
+    # Apply axis scaling based on CLI flags
+    if args.xlog:
+        plt.xscale("log")
+    if args.ylog:
+        plt.yscale("log")
+
+    # Labels
+    plt.xlabel("IFAR threshold")
+    ylabel = "log(N₂ / N₁)"
+    if args.ylog:
+        ylabel += " (y-axis log)"
+    plt.ylabel(ylabel)
+
+    plt.title(args.title)
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+
+    # Save or show
+    if args.output:
+        plt.savefig(args.output, dpi=200)
+        print(f"Saved plot to {args.output}")
+    else:
+        plt.show()
+
+
+if __name__ == "__main__":
+    main()
