@@ -6,3 +6,4 @@ __pycache__/
 
 # Ignore your custom folder
 Files/
+Plots/
