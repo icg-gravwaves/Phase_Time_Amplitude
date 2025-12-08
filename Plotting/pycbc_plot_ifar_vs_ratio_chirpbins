@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 """
 Plot log-ratio of counts above IFAR thresholds for two HDFINJFIND files.
 
@@ -35,6 +36,10 @@ def parse_args():
                         help="Use log scale for x-axis")
     parser.add_argument("--ylog", action="store_true",
                         help="Use log scale for y-axis")
+    parser.add_argument("--name1", default="N₁",
+                        help="Label for first file")
+    parser.add_argument("--name2", default="N₂",
+                        help="Label for second file")
 
     return parser.parse_args()
 
@@ -56,9 +61,11 @@ def main():
         m1_2 = f2["injections/mass1"][:]
         m2_2 = f2["injections/mass2"][:]
 
+    # Compute chirp masses mapped by injection index
     chirp1 = chirp_mass_from(m1_1, m2_1)[inj_index1]
     chirp2 = chirp_mass_from(m1_2, m2_2)[inj_index2]
 
+    # Chirp-mass bins for plotting
     chirp_bins = [
         (2.5, 10.),
         (10., 20.),
@@ -66,12 +73,12 @@ def main():
         (50., 1000.)
     ]
 
-    ifar_min = 1e-3
-    ifar_max = 1e4
-    thresholds = np.logspace(np.log10(ifar_min), np.log10(ifar_max), 5000)
+    # IFAR thresholds
+    thresholds = np.logspace(-3, 4, 5000)
 
     plt.figure(figsize=(10, 7))
 
+    # Loop through chirp-mass bins
     for low, high in chirp_bins:
         mask1 = (chirp1 >= low) & (chirp1 < high)
         mask2 = (chirp2 >= low) & (chirp2 < high)
@@ -80,33 +87,30 @@ def main():
         ifars_2 = ifar2[mask2]
 
         if len(ifars_1) == 0 or len(ifars_2) == 0:
-            print(f"Skipping bin {low}-{high} (no triggers)")
             continue
 
+        # Count events above each threshold
         counts1 = np.array([(ifars_1 >= thr).sum() for thr in thresholds])
         counts2 = np.array([(ifars_2 >= thr).sum() for thr in thresholds])
 
         with np.errstate(divide="ignore", invalid="ignore"):
             ratio = np.log(counts2 / counts1)
 
-        plt.plot(thresholds, ratio, label=f"{low}-{high} M⊙")
+        plt.plot(thresholds, ratio, label=f"{low}–{high} M⊙")
 
-    # Apply axis scaling based on CLI flags
+    # Axis scaling options
     if args.xlog:
         plt.xscale("log")
     if args.ylog:
         plt.yscale("log")
 
-    # Labels
-    plt.xlabel("IFAR threshold")
-    ylabel = "log(N₂ / N₁)"
-    if args.ylog:
-        ylabel += " (y-axis log)"
-    plt.ylabel(ylabel)
-
+    plt.xlabel("IFAR")
+    plt.ylabel(f"log({args.name2} / {args.name1})")
     plt.title(args.title)
     plt.grid(True, alpha=0.3)
-    plt.legend()
+
+    # Simple legend title
+    plt.legend(title="Chirp Mass")
 
     # Save or show
     if args.output:

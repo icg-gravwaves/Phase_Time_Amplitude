@@ -13,10 +13,10 @@ To get the signal rate this weight should be scaled by the local sensitivity
 value and by the SNR of the event in the reference detector.
 """
 
-import argparse, numpy as np, pycbc.detector, logging
+import argparse, h5py, numpy as np, pycbc.detector, logging
 from numpy.random import uniform, normal
 from copy import deepcopy
-from pycbc.io import HFile
+
 
 
 
@@ -86,8 +86,8 @@ swidth = serr / sref / args.bin_density
 # Approximate phase error at lower SNRs
 pwidth = np.arctan(serr / sref) / args.bin_density
 
-srbmax = int(args.snr_ratio / swidth)
-srbmin = int((1.0 / args.snr_ratio) / swidth)
+# srbmax = int(args.snr_ratio / swidth)
+# srbmin = int((1.0 / args.snr_ratio) / swidth)
 
 # Apply a simple smoothing to help account for measurement errors for
 # weak signals
@@ -155,7 +155,7 @@ if max_td < 0.0425:
 # ifo which gets the smallest amplitude. This allows us to get the correct
 # symmetries handled under ifo switch and apply more consistent treatment
 # of error uncertainties.
-f = HFile(args.output_file, 'w')
+f = h5py.File(args.output_file, 'w')
 for ifo0 in args.ifos:
     logging.info('Storing results using %s as a reference', ifo0)
     other_ifos = deepcopy(args.ifos)
@@ -267,6 +267,17 @@ for ifo0 in args.ifos:
     keys = np.array(list(weights.keys()))
     values = np.array(list(weights.values()), dtype=np.float32)
     values /= values.max()
+
+    n_ifo_pairs = len(args.ifos) - 1
+    srbin_cols = [3*i + 2 for i in range(n_ifo_pairs)]
+
+    if len(keys) > 0:
+        all_sr_bins = keys[:, srbin_cols].flatten()
+        srbmin = int(all_sr_bins.min())
+        srbmax = int(all_sr_bins.max())
+    else:
+        srbmin = 0
+        srbmax = 0
 
     # logging.info('Removing bins outside of SNR ratio limits')
     # n_precut = len(keys)

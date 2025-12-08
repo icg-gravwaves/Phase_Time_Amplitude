@@ -58,7 +58,10 @@ for file in files:
 
     # Train the Flow on the data.
     bounds, smin, smax = create_bounds(data_array)
-    flow = NormalizingFlow(len(keys), bounds=bounds)
+    if len(ifos) == 2:
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, bins=4)
+    elif len(ifos) == 3:
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=80, bins=15)
     history = flow.fit(data_array, n_samples=300000)
     srmin = min(smin)
     srmax = max(smax)
