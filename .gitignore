@@ -3,7 +3,7 @@ __pycache__/
 
 # Ignore Jupyter Notebook checkpoint folders
 .ipynb_checkpoints/
-
+.DS_Store
 # Ignore your custom folder
 Files/
 Plots/
