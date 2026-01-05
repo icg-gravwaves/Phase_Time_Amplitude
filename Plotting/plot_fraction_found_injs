@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""
+Chirp-mass–binned efficiency (found fraction) plot
+for ANY number of HDFINJFIND files.
+"""
+
+import argparse
+import h5py
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ------------------------------------------------------------
+# Argument parsing
+# ------------------------------------------------------------
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Chirp-mass–binned found fraction plot for any number of files."
+    )
+
+    parser.add_argument(
+        "--files", nargs="+", required=True,
+        help="List of HDFINJFIND files to compare"
+    )
+    parser.add_argument(
+        "--file-names", nargs="*", default=None,
+        help="Optional list of labels corresponding to the files"
+    )
+    parser.add_argument("--output", default="chirp_mass_fraction.png")
+    parser.add_argument("--ifar-threshold", type=float, default=0.5)
+    parser.add_argument("--title", default="Chirp Mass Found Fraction Comparison")
+
+    return parser.parse_args()
+
+
+# ------------------------------------------------------------
+# Chirp mass helper
+# ------------------------------------------------------------
+def chirp_mass(m1, m2):
+    return (m1 * m2)**(3.0/5.0) / (m1 + m2)**(1.0/5.0)
+
+
+# ------------------------------------------------------------
+# Load all injections + found injections
+# ------------------------------------------------------------
+def load_injection_data(h5, ifar_thresh):
+    m1 = h5["injections/mass1"][:]
+    m2 = h5["injections/mass2"][:]
+    mc = chirp_mass(m1, m2)
+
+    inj_idx = h5["found/injection_index"][:]
+    ifar = h5["found/ifar_exc"][:]
+
+    found_mask = ifar >= ifar_thresh
+    inj_idx_found = inj_idx[found_mask]
+
+    mc_found = mc[inj_idx_found]
+
+    return mc, mc_found
+
+
+# ------------------------------------------------------------
+# Main
+# ------------------------------------------------------------
+if __name__ == "__main__":
+    args = parse_args()
+
+    num_files = len(args.files)
+
+    # Labels — if none provided, auto-generate
+    if args.file_names is None or len(args.file_names) != num_files:
+        labels = [f"File {i+1}" for i in range(num_files)]
+    else:
+        labels = args.file_names
+
+    # Chirp mass bins
+    chirp_bins = [
+        (0.8, 2.5),
+        (2.5, 20.0),
+        (20.0, 50.0),
+        (50.0, 1000.0),
+    ]
+    bin_labels = [f"{lo}-{hi}" for lo, hi in chirp_bins]
+
+    # Load all files
+    all_totals = []
+    all_found = []
+    all_frac = []
+
+    for fpath in args.files:
+        with h5py.File(fpath, "r") as h5:
+            mc_total, mc_found = load_injection_data(h5, args.ifar_threshold)
+
+        totals = []
+        found = []
+        frac = []
+
+        for lo, hi in chirp_bins:
+            t = np.sum((mc_total >= lo) & (mc_total < hi))
+            f = np.sum((mc_found >= lo) & (mc_found < hi))
+            totals.append(t)
+            found.append(f)
+            print(np.sum(found))
+            frac.append(f / t if t > 0 else np.nan)
+
+        all_totals.append(totals)
+        all_found.append(found)
+        all_frac.append(frac)
+        
+
+    # Convert to arrays
+    all_frac = np.array(all_frac)   # shape = (num_files, num_bins)
+
+    # --------------------------------------------------------
+    # Plotting
+    # --------------------------------------------------------
+    x = np.arange(len(chirp_bins))
+
+    width = 0.8 / num_files  # auto-adjust bar width
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    colors = plt.cm.tab10(np.linspace(0, 1, num_files))
+
+    for i in range(num_files):
+        offset = (i - num_files/2) * width + width/2
+        ax.bar(
+            x + offset,
+            all_frac[i],
+            width,
+            label=labels[i],
+            color=colors[i]
+        )
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(bin_labels)
+    ax.set_ylabel("Fraction of injections found")
+    ax.set_xlabel("Chirp Mass (M☉)")
+    ax.set_title(args.title)
+    ax.grid(axis="y", linestyle="--", alpha=0.4)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.savefig(args.output, dpi=150)
+    plt.show()
