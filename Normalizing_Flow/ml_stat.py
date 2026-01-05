@@ -140,7 +140,7 @@ class NormalizingFlow(MLModel):
     def fit(
         self,
         x,
-        n_epochs: int = 300,
+        n_epochs: int = 500,
         lr: float = 1e-3,
         batch_size: int = 5000,
         validation_fraction: float = 0.2,

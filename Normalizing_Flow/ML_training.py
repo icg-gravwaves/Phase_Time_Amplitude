@@ -5,10 +5,8 @@ from ml_stat import MLStatistic
 from ml_stat import NormalizingFlow
 import torch
 import h5py
-from pycbc import pycbc
 
 parser = argparse.ArgumentParser(description=__doc__)
-pycbc.add_common_pycbc_options(parser)
 parser.add_argument('--input-files', nargs='+', required=True, help="Input files to train ML model on")
 args = parser.parse_args()
 
@@ -59,13 +57,18 @@ for file in files:
     # Train the Flow on the data.
     bounds, smin, smax = create_bounds(data_array)
     if len(ifos) == 2:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, bins=4)
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, num_bins=4)
+        history = flow.fit(data_array, n_samples=500000)
     elif len(ifos) == 3:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=80, bins=15)
-    history = flow.fit(data_array, n_samples=300000)
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=80, num_bins=15)
+        history = flow.fit(data_array, n_samples=500000)
+    elif len(ifos) == 4:
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=128, num_bins=20)
+        history = flow.fit(data_array, n_samples=700000)
+    
     srmin = min(smin)
     srmax = max(smax)
     hist_max = max(flow.prob(data_array))
     # Save the model paramters to a file to be later used as a lookup.
     ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "smin": srmin, "smax": srmax, "hist_max": hist_max})
-    ml_stat.to_file("PHASE_TIME_AMP_%s.h5" % ''.join(ifos), group_name="model")
+    ml_stat.to_file("../Files/PHASE_TIME_AMP_%s_FLOW.h5" % ''.join(ifos), group_name="model")

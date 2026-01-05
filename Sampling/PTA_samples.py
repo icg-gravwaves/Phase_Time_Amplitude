@@ -14,10 +14,10 @@ parser.add_argument('--relative-sensitivities', nargs='+', type=float,
 parser.add_argument('--seed', type=int, default=124)
 parser.add_argument('--output-file', required=True)
 parser.add_argument('--batch-size', type=int, default=1000000)
-parser.add_argument('--samples', type=float, default=300000)
+parser.add_argument('--samples', type=float, default=500000)
 parser.add_argument('--phase-uncertainty', type=float, default=2.2,
                     help="Scale factor for phase uncertainty model")
-parser.add_argument('--bandwidth', type=float, default=50.,
+parser.add_argument('--bandwidth', type=float, default=30.,
                     help="Effective bandwidth of the signal in Hz")
 parser.add_argument('--time-phase-correlation', type=float, default=0.86,
                     help="Correlation coefficient between time and phase "
