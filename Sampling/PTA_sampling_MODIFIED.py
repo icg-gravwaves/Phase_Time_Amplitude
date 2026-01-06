@@ -218,7 +218,7 @@ for k in range(chunks):
         sr = (data[ifo1]['snr'] / data[ifo0]['snr'])
         dtbin = (dt // twidth)
         dpbin = (dp // pwidth)
-        srbin = np.log(sr // swidth)
+        srbin = np.log(sr) // swidth
         bind += [dtbin, dpbin, srbin]
 
     # Measure network SNR.
@@ -273,8 +273,8 @@ srbin_cols = [3*i + 2 for i in range(n_ifo_pairs)]
 
 if len(keys) > 0:
     all_sr_bins = keys[:, srbin_cols].flatten()
-    srbmin = np.exp(int(all_sr_bins.min()))
-    srbmax = np.exp(int(all_sr_bins.max()))
+    srbmin = int(np.exp(swidth*(all_sr_bins.min()))/swidth)
+    srbmax = int(np.exp(swidth*(all_sr_bins.max()))/swidth)
 else:
     srbmin = 0
     srbmax = 0
