@@ -156,163 +156,163 @@ if max_td < 0.0425:
 # symmetries handled under ifo switch and apply more consistent treatment
 # of error uncertainties.
 f = h5py.File(args.output_file, 'w')
-for ifo0 in args.ifos:
-    logging.info('Storing results using %s as a reference', ifo0)
-    other_ifos = deepcopy(args.ifos)
-    other_ifos.remove(ifo0)
+ifo0 = args.ifos[0]
+logging.info('Storing results using %s as a reference', ifo0)
+other_ifos = deepcopy(args.ifos)
+other_ifos.remove(ifo0)
 
-    l = 0
-    nsamples = 0
-    weights = {}
-    for k in range(chunks):
-        nsamples += size
-        logging.info('generating %s samples', size)
+l = 0
+nsamples = 0
+weights = {}
+for k in range(chunks):
+    nsamples += size
+    logging.info('generating %s samples', size)
 
-        # Choose random sky location and polarizations from
-        # an isotropic population
-        ra = uniform(0, 2 * np.pi, size=size)
-        dec = np.arccos(uniform(-1., 1., size=size)) - np.pi/2
-        inc = np.arccos(uniform(-1., 1., size=size))
-        pol = uniform(0, 2 * np.pi, size=size)
-        ic = np.cos(inc)
-        ip = 0.5 * (1.0 + ic * ic)
-        D_max=0.6 * np.min(args.relative_sensitivities)
-        uniform_random = np.random.uniform(0, 1, size=size)
-        distance = D_max * (uniform_random)**(1/3) 
+    # Choose random sky location and polarizations from
+    # an isotropic population
+    ra = uniform(0, 2 * np.pi, size=size)
+    dec = np.arccos(uniform(-1., 1., size=size)) - np.pi/2
+    inc = np.arccos(uniform(-1., 1., size=size))
+    pol = uniform(0, 2 * np.pi, size=size)
+    ic = np.cos(inc)
+    ip = 0.5 * (1.0 + ic * ic)
+    D_max=0.6 * np.min(args.relative_sensitivities)
+    uniform_random = np.random.uniform(0, 1, size=size)
+    distance = D_max * (uniform_random)**(1/3) 
 
-        # calculate the toa, poa, and amplitude of each sample
-        data = {}
-        for rs, ifo in zip(args.relative_sensitivities, args.ifos):
-            data[ifo] = {}
-            fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
-            sp, sc = fp * ip, fc * ic
-            data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs
-            snr_sp = (rs*sp/distance) 
-            snr_sc = (rs*sc/distance) 
-            data[ifo]['op'] = np.arctan2(snr_sc, snr_sp)
-            fsize = snr_sp.shape
-            normal_sp = normal(scale=1, size=fsize)
-            normal_sc = normal(scale=1, size=fsize)
-            snr_sp += normal_sp
-            snr_sc += normal_sc
-            data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
-            # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
-            p_unc = args.phase_constant/data[ifo]['snr']
-            t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])
-            rho = args.time_phase_correlation
-            # Cholensky Decomposition
-            l22_factor = np.sqrt(1.0 - rho**2)
-            z_p = normal(size=fsize)
-            z_t = normal(size=fsize)
-            normal_dp = p_unc * z_p
-            normal_dt = (rho * t_unc * z_p) + (t_unc * l22_factor * z_t)
-            data[ifo]['p'] = (data[ifo]['op'] + normal_dp) % (2. * np.pi)
-            data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
+    # calculate the toa, poa, and amplitude of each sample
+    data = {}
+    for rs, ifo in zip(args.relative_sensitivities, args.ifos):
+        data[ifo] = {}
+        fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
+        sp, sc = fp * ip, fc * ic
+        data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs
+        snr_sp = (rs*sp/distance) 
+        snr_sc = (rs*sc/distance) 
+        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp)
+        fsize = snr_sp.shape
+        normal_sp = normal(scale=1, size=fsize)
+        normal_sc = normal(scale=1, size=fsize)
+        snr_sp += normal_sp
+        snr_sc += normal_sc
+        data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
+        # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
+        p_unc = args.phase_constant/data[ifo]['snr']
+        t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])
+        rho = args.time_phase_correlation
+        # Cholensky Decomposition
+        l22_factor = np.sqrt(1.0 - rho**2)
+        z_p = normal(size=fsize)
+        z_t = normal(size=fsize)
+        normal_dp = p_unc * z_p
+        normal_dt = (rho * t_unc * z_p) + (t_unc * l22_factor * z_t)
+        data[ifo]['p'] = (data[ifo]['op'] + normal_dp) % (2. * np.pi)
+        data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
 
-        # Bin the data
-        bind = []
-        keep = None
-        for ifo1 in other_ifos:
-            dt = (data[ifo0]['t'] - data[ifo1]['t'])
-            dp = (data[ifo0]['p'] - data[ifo1]['p']) % (2. * np.pi)
-            sr = (data[ifo1]['snr'] / data[ifo0]['snr'])
-            dtbin = (dt // twidth)
-            dpbin = (dp // pwidth)
-            srbin = (sr // swidth)
-            bind += [dtbin, dpbin, srbin]
+    # Bin the data
+    bind = []
+    keep = None
+    for ifo1 in other_ifos:
+        dt = (data[ifo0]['t'] - data[ifo1]['t'])
+        dp = (data[ifo0]['p'] - data[ifo1]['p']) % (2. * np.pi)
+        sr = (data[ifo1]['snr'] / data[ifo0]['snr'])
+        dtbin = (dt // twidth)
+        dpbin = (dp // pwidth)
+        srbin = np.log(sr // swidth)
+        bind += [dtbin, dpbin, srbin]
 
-        # Measure network SNR.
-        snrs_sq=np.zeros(len(data[ifo0]['snr']))
-        for ifo in args.ifos:
-            snrs_sq += data[ifo]['snr']**2
-        net_snr = snrs_sq**0.5
-        
-        # Applying thresholding, individual detector SNR > 5,
-        # network SNR > 9.
-        keep = None 
-        for ifo in args.ifos:
-            if keep is None:
-                keep = (net_snr >= 9) & (data[ifo]['snr']>= 5 )
-            else:
-                keep = keep & (net_snr >= 9) & (data[ifo]['snr']>= 5 )
+    # Measure network SNR.
+    snrs_sq=np.zeros(len(data[ifo0]['snr']))
+    for ifo in args.ifos:
+        snrs_sq += data[ifo]['snr']**2
+    net_snr = snrs_sq**0.5
+    
+    # Applying thresholding, individual detector SNR > 5,
+    # network SNR > 9.
+    keep = None 
+    for ifo in args.ifos:
+        if keep is None:
+            keep = (net_snr >= 9) & (data[ifo]['snr']>= 5 )
+        else:
+            keep = keep & (net_snr >= 9) & (data[ifo]['snr']>= 5 )
 
-        # Calculate and sum the weights for each bin
-        # use first ifo as reference for weights
-        bind = [a[keep] for a in bind]
+    # Calculate and sum the weights for each bin
+    # use first ifo as reference for weights
+    bind = [a[keep] for a in bind]
 
 
-        for i, key in enumerate(zip(*bind)):
-            if key not in weights:
-                weights[key] = 0
-            weights[key] += 1
+    for i, key in enumerate(zip(*bind)):
+        if key not in weights:
+            weights[key] = 0
+        weights[key] += 1
 
-        ol = l
-        l = len(weights.values())
-        logging.info('%s, %s, %s, %s', l, l - ol, (l - ol) / float(size),
-                    l / float(nsamples))
+    ol = l
+    l = len(weights.values())
+    logging.info('%s, %s, %s, %s', l, l - ol, (l - ol) / float(size),
+                l / float(nsamples))
 
-    # logging.info('applying smoothing')
-    # # apply smoothing iteratively
-    # pwrap = (2 * np.pi) / pwidth
-    # for i in range(len(args.ifos)-1):
-    #     logging.info('%s-phase', len(weights))
-    #     weights = smooth_param(weights, i * 3 + 1, wrapped=pwrap)
-    #     logging.info('%s-time', len(weights))
-    #     weights = smooth_param(weights, i * 3 + 0)
-    #     logging.info('%s-amp', len(weights))
-    #     weights = smooth_param(weights, i * 3 + 2)
-    # logging.info('smoothing done: %s', len(weights))
+# logging.info('applying smoothing')
+# # apply smoothing iteratively
+# pwrap = (2 * np.pi) / pwidth
+# for i in range(len(args.ifos)-1):
+#     logging.info('%s-phase', len(weights))
+#     weights = smooth_param(weights, i * 3 + 1, wrapped=pwrap)
+#     logging.info('%s-time', len(weights))
+#     weights = smooth_param(weights, i * 3 + 0)
+#     logging.info('%s-amp', len(weights))
+#     weights = smooth_param(weights, i * 3 + 2)
+# logging.info('smoothing done: %s', len(weights))
 
-    logging.info('converting to numpy arrays and normalizing')
-    keys = np.array(list(weights.keys()))
-    values = np.array(list(weights.values()), dtype=np.float32)
-    values /= values.max()
+logging.info('converting to numpy arrays and normalizing')
+keys = np.array(list(weights.keys()))
+values = np.array(list(weights.values()), dtype=np.float32)
+values /= values.max()
 
-    n_ifo_pairs = len(args.ifos) - 1
-    srbin_cols = [3*i + 2 for i in range(n_ifo_pairs)]
+n_ifo_pairs = len(args.ifos) - 1
+srbin_cols = [3*i + 2 for i in range(n_ifo_pairs)]
 
-    if len(keys) > 0:
-        all_sr_bins = keys[:, srbin_cols].flatten()
-        srbmin = int(all_sr_bins.min())
-        srbmax = int(all_sr_bins.max())
-    else:
-        srbmin = 0
-        srbmax = 0
+if len(keys) > 0:
+    all_sr_bins = keys[:, srbin_cols].flatten()
+    srbmin = np.exp(int(all_sr_bins.min()))
+    srbmax = np.exp(int(all_sr_bins.max()))
+else:
+    srbmin = 0
+    srbmax = 0
 
-    # logging.info('Removing bins outside of SNR ratio limits')
-    # n_precut = len(keys)
-    # keep = None
-    # for i in range(len(args.ifos)-1):
-    #     srbin = np.array(list(zip(*keys))[i * 3 + 2])
-    #     if keep is None:
-    #         keep = (srbin <= srbmax) & (srbin >= srbmin)
-    #     else:
-    #         keep = keep & (srbin <= srbmax) & (srbin >= srbmin)
-    # keys = keys[keep]
-    # values = values[keep]
-    # logging.info('Removed %s bins', n_precut - len(keys))
+# logging.info('Removing bins outside of SNR ratio limits')
+# n_precut = len(keys)
+# keep = None
+# for i in range(len(args.ifos)-1):
+#     srbin = np.array(list(zip(*keys))[i * 3 + 2])
+#     if keep is None:
+#         keep = (srbin <= srbmax) & (srbin >= srbmin)
+#     else:
+#         keep = keep & (srbin <= srbmax) & (srbin >= srbmin)
+# keys = keys[keep]
+# values = values[keep]
+# logging.info('Removed %s bins', n_precut - len(keys))
 
-    # logging.info('discarding bins below threshold to limit storage')
-    # l = values > args.weight_threshold
-    # keys = keys[l].astype(bin_dtype)
-    # values = values[l].astype(np.float32)
-    # logging.info('Final length: %s', len(keys))
+# logging.info('discarding bins below threshold to limit storage')
+# l = values > args.weight_threshold
+# keys = keys[l].astype(bin_dtype)
+# values = values[l].astype(np.float32)
+# logging.info('Final length: %s', len(keys))
 
-    logging.info('Presorting by keys for downstream use')
-    ncol = keys.shape[1]
-    pdtype = [('c%s' % i, bin_dtype) for i in range(ncol)]
-    keys_bin = np.zeros(len(values), dtype=pdtype)
-    for i in range(ncol):
-        keys_bin['c%s' % i] = keys[:, i]
-    lsort = keys_bin.argsort()
-    keys_bin = keys_bin[lsort]
-    values = values[lsort]
+logging.info('Presorting by keys for downstream use')
+ncol = keys.shape[1]
+pdtype = [('c%s' % i, bin_dtype) for i in range(ncol)]
+keys_bin = np.zeros(len(values), dtype=pdtype)
+for i in range(ncol):
+    keys_bin['c%s' % i] = keys[:, i]
+lsort = keys_bin.argsort()
+keys_bin = keys_bin[lsort]
+values = values[lsort]
 
-    logging.info('Writing results to file')
-    f.create_dataset('%s/param_bin' % ifo0, data=keys_bin, compression='gzip',
-                    compression_opts=7)
-    f.create_dataset('%s/weights' % ifo0, data=values, compression='gzip',
-                    compression_opts=7)
+logging.info('Writing results to file')
+f.create_dataset('%s/param_bin' % ifo0, data=keys_bin, compression='gzip',
+                compression_opts=7)
+f.create_dataset('%s/weights' % ifo0, data=values, compression='gzip',
+                compression_opts=7)
 
 f.attrs['sensitivity_ratios'] = args.relative_sensitivities
 f.attrs['srbmin'] = srbmin
