@@ -1,5 +1,0 @@
-./plot_ifar_vs_ratio_chirpbins --file-one ../Files/HDFINJFIND_HLV_Flow_test.hdf --file-two ../Files/HDFINJFIND_HLV_Flow.hdf --title "Ratio of the number of injections found above IFARs - HLV" --output ../Plots/HLV_Sens_Flow2_vs_Flow.png --xlog --name1 "Flow2" --name2 "Flow"
-
-./plot_fraction_found_injs --files "../Files/HDFINJFIND_HLV_original.hdf" "../Files/HDFINJFIND_HLV_flow.hdf"  --output "../Plots/HLV_found_injs.png" --file-names "Original" "Flow" --title "Fraction of total injections found as HLV coincidences with IFAR > 0.5"
-
-python combine_plots.py --images ../Plots/HLV_HL_found_injs.png ../Plots/HV_found_injs.png ../Plots/LV_found_injs.png ../Plots/HLV_all_found_injs.png --output ../Plots/2DET_found_injs.png
