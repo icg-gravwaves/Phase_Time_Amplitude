@@ -65,7 +65,10 @@ for file in files:
     elif len(ifos) == 4:
         flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=128, num_bins=20)
         history = flow.fit(data_array, n_samples=700000)
-    
+    elif len(ifos) == 5:
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=140, num_bins=25)
+        history = flow.fit(data_array, n_samples=1000000)
+
     srmin = min(smin)
     srmax = max(smax)
     hist_max = max(flow.prob(data_array))

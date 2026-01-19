@@ -3,12 +3,12 @@ import subprocess
 def main():
     cmd = [
         "python", "PTA_samples.py",
-        "--ifos", "H1",  "L1", "V1", 
-        "--relative-sensitivities", "1.0", "1.0", "0.33", 
-        "--samples", "500000.",
+        "--ifos", "L1","H1", "V1", "K1" , "A1",
+        "--relative-sensitivities", "1.0","1.0", "1.0", "1.0", "1.0",
+        "--samples", "1000000.",
         "--batch-size", "1000000",
         "--seed", "105",
-        "--output-file", "../Files/HLV_Samples_Flow.hdf",
+        "--output-file", "../Files/HLVKI_Samples_Flow.hdf",
         "--verbose"
     ]
     subprocess.run(cmd)
