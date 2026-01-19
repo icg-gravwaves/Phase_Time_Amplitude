@@ -1,3 +1,12 @@
+"""
+Create a file containing the time, phase and amplitude correlations between two
+or more detectors for signals by doing a simple monte-carlo.
+
+Output is the relative amplitude, time, and phase as compared to a reference
+IFO. The output file contains a continuous distribution of samples which can then be used to train a Normalizing Flow model.
+"""
+
+
 import argparse, h5py, numpy as np, pycbc.detector, logging
 from numpy.random import uniform, normal
 from copy import deepcopy
@@ -37,7 +46,7 @@ np.random.seed(args.seed)
 size = args.batch_size
 
 
-# Store results selecting the first ifo as a reference. The reference ifo is used 
+# Use the first detector as a reference. The reference ifo is used 
 # to get the correct symmetries when measuring dt, dp and sr for the triggers.
 f = h5py.File(args.output_file, 'w')
 ifo0 = args.ifos[0]
@@ -75,16 +84,18 @@ while len(all_keys)<=args.samples:
         data[ifo] = {}
         fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
         sp, sc = fp * ip, fc * ic
-        data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs
+        data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs #Amplitude without uncertainities
         snr_sp = (rs*sp/distance) 
         snr_sc = (rs*sc/distance) 
-        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp)
+        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp) #Phase without uncertainties
         fsize = snr_sp.shape
+        # Add noise to the SNR measurements
         normal_sp = normal(scale=1, size=fsize)
         normal_sc = normal(scale=1, size=fsize)
         snr_sp += normal_sp
         snr_sc += normal_sc
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
+        # Add noise to the phase and time measurements
         # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
         p_unc = args.phase_uncertainty/data[ifo]['snr']
         t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])

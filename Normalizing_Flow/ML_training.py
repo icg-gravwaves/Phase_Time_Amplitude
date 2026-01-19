@@ -1,3 +1,7 @@
+"""Training a Normalizing Flow model on the Phase, Time and Amplitude sampled data from simulated signals in multiple detectors.
+ The model paramteters are saved to a file that can be later used to evaluate the probability density of triggers during the search."""
+
+
 import argparse, numpy as np, logging
 from collections import defaultdict
 from copy import deepcopy
@@ -13,7 +17,7 @@ args = parser.parse_args()
 files = args.input_files
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
-# Read in parameter data from files. Also list of ifos and reference detector.
+# Read in parameter data from files. Also list of ifos and reference detector, needed for evaluating triggers.
 for file in files:
     data = {}
     with h5py.File(file, "r") as f:
@@ -41,21 +45,22 @@ for file in files:
         smax = np.array([])
         
         for i in range(n_dims):
-            if i % 3 == 1:  # every second dimension (Phase)
+            if i % 3 == 1:  # Phase parameter
                 bounds.append([0, 2*np.pi])
-            elif i % 3 == 2:
+            elif i % 3 == 2: # Signal ratio parameter
                 bounds.append([data_array[:, i].min() - 1e-6, 
                             data_array[:, i].max() + 1e-6])
                 smin =np.append(smin, np.exp(data_array[:, i].min() - 1e-6))
                 smax = np.append(smax,np.exp(data_array[:, i].max() + 1e-6))
-            else:
+            else: # Time parameter
                 bounds.append([data_array[:, i].min() - 1e-6, 
                             data_array[:, i].max() + 1e-6])
         
         return np.array(bounds, dtype=np.float32), smin, smax
 
-    # Train the Flow on the data.
+    # Find the bounds for each parameter as well as the maximum and minimum signal ratios in the training data. These are used to measure the volume later in the search.
     bounds, smin, smax = create_bounds(data_array)
+    # Train the Flow on the data.
     if len(ifos) == 2:
         flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, num_bins=4)
         history = flow.fit(data_array, n_samples=500000)

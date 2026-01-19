@@ -86,55 +86,6 @@ swidth = serr / sref / args.bin_density
 # Approximate phase error at lower SNRs
 pwidth = np.arctan(serr / sref) / args.bin_density
 
-# srbmax = int(args.snr_ratio / swidth)
-# srbmin = int((1.0 / args.snr_ratio) / swidth)
-
-# Apply a simple smoothing to help account for measurement errors for
-# weak signals
-# def smooth_param(data, index, wrapped=None):
-#     mref = max(data.values())
-#     bins = np.arange(-args.smoothing_sigma * args.bin_density,\
-#                         args.smoothing_sigma * args.bin_density + 1)
-#     kernel = norm.pdf(bins, scale=args.bin_density)
-
-#     nweights = {}
-
-#     # This is massively redundant as many points may be
-#     # recalculated, but it's straightforward.
-#     for i, key in enumerate(data):
-#         if data[key] / mref < args.weight_threshold:
-#             continue
-
-#         for a in bins:
-#             nkey = list(key)
-#             nkey[index] += a
-#             # If smoothing a wrapped parameter (e.g. phase)
-#             # put back into the allowed range
-#             if wrapped:
-#                 nkey[index] = np.floor(nkey[index] % wrapped)
-
-#             tnkey = tuple(nkey)
-
-#             if tnkey in nweights:
-#                 continue
-
-#             weight = 0
-#             for b, w in zip(bins, kernel):
-#                 wkey = list(nkey)
-#                 wkey[index] += b
-#                 # If smoothing a wrapped parameter (e.g. phase)
-#                 # put back into the allowed range
-#                 if wrapped:
-#                     wkey[index] = np.floor(wkey[index] % wrapped)
-
-#                 wkey = tuple(wkey)
-
-#                 if wkey in data:
-#                     weight += data[wkey] * w
-
-#             nweights[tnkey] = weight
-#     return nweights
-
 d = {ifo: pycbc.detector.Detector(ifo) for ifo in args.ifos}
 
 pycbc.init_logging(args.verbose)
@@ -151,10 +102,9 @@ if max_td < 0.0425:
                        'travel time. Some observatories may be further apart '
                        'than this.')
 
-# Store results for each ifo as a reference. The reference ifo is the
+# Store results using first ifo as a reference. The reference ifo is the
 # ifo which gets the smallest amplitude. This allows us to get the correct
-# symmetries handled under ifo switch and apply more consistent treatment
-# of error uncertainties.
+# symmetries handled.
 f = h5py.File(args.output_file, 'w')
 ifo0 = args.ifos[0]
 logging.info('Storing results using %s as a reference', ifo0)
@@ -169,7 +119,10 @@ for k in range(chunks):
     logging.info('generating %s samples', size)
 
     # Choose random sky location and polarizations from
-    # an isotropic population
+    # an isotropic population. Distance is drawn from a 
+    # squared power law distribution. D_max is chosen 
+    # such that the SNR tail is normlaized to commonly 
+    # commonly used values.
     ra = uniform(0, 2 * np.pi, size=size)
     dec = np.arccos(uniform(-1., 1., size=size)) - np.pi/2
     inc = np.arccos(uniform(-1., 1., size=size))
@@ -186,16 +139,18 @@ for k in range(chunks):
         data[ifo] = {}
         fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
         sp, sc = fp * ip, fc * ic
-        data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs
+        data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs #Amplitude without uncertainities
         snr_sp = (rs*sp/distance) 
         snr_sc = (rs*sc/distance) 
-        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp)
+        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp) #Phase without uncertainties
         fsize = snr_sp.shape
+        # Add noise to the SNR measurements
         normal_sp = normal(scale=1, size=fsize)
         normal_sc = normal(scale=1, size=fsize)
         snr_sp += normal_sp
         snr_sc += normal_sc
         data[ifo]['snr'] = (snr_sp**2+snr_sc**2)**0.5
+        # Add noise to the phase and time measurements
         # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
         p_unc = args.phase_constant/data[ifo]['snr']
         t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])
@@ -251,22 +206,13 @@ for k in range(chunks):
     logging.info('%s, %s, %s, %s', l, l - ol, (l - ol) / float(size),
                 l / float(nsamples))
 
-# logging.info('applying smoothing')
-# # apply smoothing iteratively
-# pwrap = (2 * np.pi) / pwidth
-# for i in range(len(args.ifos)-1):
-#     logging.info('%s-phase', len(weights))
-#     weights = smooth_param(weights, i * 3 + 1, wrapped=pwrap)
-#     logging.info('%s-time', len(weights))
-#     weights = smooth_param(weights, i * 3 + 0)
-#     logging.info('%s-amp', len(weights))
-#     weights = smooth_param(weights, i * 3 + 2)
-# logging.info('smoothing done: %s', len(weights))
 
 logging.info('converting to numpy arrays and normalizing')
 keys = np.array(list(weights.keys()))
 values = np.array(list(weights.values()), dtype=np.float32)
 values /= values.max()
+
+#Calculate srbmin and srbmax for later use in volume determination
 
 n_ifo_pairs = len(args.ifos) - 1
 srbin_cols = [3*i + 2 for i in range(n_ifo_pairs)]
@@ -279,24 +225,6 @@ else:
     srbmin = 0
     srbmax = 0
 
-# logging.info('Removing bins outside of SNR ratio limits')
-# n_precut = len(keys)
-# keep = None
-# for i in range(len(args.ifos)-1):
-#     srbin = np.array(list(zip(*keys))[i * 3 + 2])
-#     if keep is None:
-#         keep = (srbin <= srbmax) & (srbin >= srbmin)
-#     else:
-#         keep = keep & (srbin <= srbmax) & (srbin >= srbmin)
-# keys = keys[keep]
-# values = values[keep]
-# logging.info('Removed %s bins', n_precut - len(keys))
-
-# logging.info('discarding bins below threshold to limit storage')
-# l = values > args.weight_threshold
-# keys = keys[l].astype(bin_dtype)
-# values = values[l].astype(np.float32)
-# logging.info('Final length: %s', len(keys))
 
 logging.info('Presorting by keys for downstream use')
 ncol = keys.shape[1]
