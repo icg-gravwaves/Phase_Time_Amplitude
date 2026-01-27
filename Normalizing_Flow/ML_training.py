@@ -1,5 +1,5 @@
 """Training a Normalizing Flow model on the Phase, Time and Amplitude sampled data from simulated signals in multiple detectors.
- The model paramteters are saved to a file that can be later used to evaluate the probability density of triggers during the search."""
+ The model paramteters are saved to a file that can be later used to evaluate the probability density of triggers during the search. """
 
 
 import argparse, numpy as np, logging
