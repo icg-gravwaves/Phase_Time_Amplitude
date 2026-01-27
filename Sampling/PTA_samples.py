@@ -11,6 +11,9 @@ import argparse, h5py, numpy as np, pycbc.detector, logging
 from numpy.random import uniform, normal
 from copy import deepcopy
 from collections import defaultdict
+from pycbc.waveform import get_fd_waveform
+from pycbc.psd import aLIGOZeroDetHighPower
+from scipy.interpolate import RectBivariateSpline
 
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -45,6 +48,45 @@ pycbc.init_logging(args.verbose)
 np.random.seed(args.seed)
 size = args.batch_size
 
+""" Bandwidth Calculation """
+
+def bandwidth(m1,m2,f_lower=20.0, delta_f=1/4, f_final = 56):
+    hp, hc = get_fd_waveform(approximant="IMRPhenomXPHM",
+                            mass1=m1, mass2=m2,
+                            f_lower=f_lower,
+                            delta_f=delta_f,
+                            f_final = f_final)
+    f = hp.sample_frequencies.numpy()
+    h_abs2 = np.abs(hp.numpy())**2
+    psd = aLIGOZeroDetHighPower(len(hp), hp.delta_f, f_lower)
+    psd=psd.numpy()
+    mask = (f >= f_lower) & (psd > 0) & np.isfinite(psd)
+    f, w = f[mask], h_abs2[mask] / psd[mask]
+    norm = np.sum(w) * delta_f                      
+    f_mean  = (np.sum(f * w) * delta_f) / norm      
+    f2_mean = (np.sum((f**2) * w) * delta_f) / norm
+    bw2 = f2_mean - f_mean**2
+    bw = np.sqrt(max(float(bw2), 0.0))
+    return bw
+
+""" Building Interpolation Grid """
+
+#Build up a grid of bandwidth values for different masses, the bandwidth in the sampler then uses this 
+#grid to interpolate the bandwidth for given masses. It would take too long to compute the bandwidth
+#for each sample with the number of samples we want to generate. 
+
+grid_points = 40  
+m_range = np.linspace(1, 80, grid_points)
+z_grid = np.zeros((grid_points, grid_points))
+
+for i, mi in enumerate(m_range):
+    for j, mj in enumerate(m_range):
+        if mj > mi: 
+            z_grid[i, j] = bandwidth(mj, mi) 
+        else:
+            z_grid[i, j] = bandwidth(mi, mj)
+interp_func = RectBivariateSpline(m_range, m_range, z_grid)
+
 
 # Use the first detector as a reference. The reference ifo is used 
 # to get the correct symmetries when measuring dt, dp and sr for the triggers.
@@ -66,15 +108,38 @@ while len(all_keys)<=args.samples:
     # squared power law distribution. D_max is chosen 
     # such that the SNR tail is normlaized to commonly 
     # commonly used values.
+
+    """ Mass Model """
+
+    m1_samples = np.random.uniform(1, 150, size=size)
+    m2_samples = np.random.uniform(1, 150, size=size)
+    # Ensure m1 >= m2 for consistency
+    mask = m2_samples > m1_samples
+    m1_samples[mask], m2_samples[mask] = m2_samples[mask], m1_samples[mask]
+
+    def chirp_mass(m1, m2):
+        return (m1 * m2)**(3/5) / (m1 + m2)**(1/5)
+
+    """ Distance Model """
+
+    D_max=0.6 * np.min(args.relative_sensitivities)
+    uniform_random = np.random.uniform(0, 1, size=size)
+    distance = D_max * (uniform_random)**(1/3) 
+
+
+    """ Measuring Bandwidth for given masses"""
+ 
+    bw = interp_func.ev(m1_samples, m2_samples)
+
+    """ Signal Location and Orientation """
+
     ra = uniform(0, 2 * np.pi, size=size)
     dec = np.arccos(uniform(-1., 1., size=size)) - np.pi/2
     inc = np.arccos(uniform(-1., 1., size=size))
     pol = uniform(0, 2 * np.pi, size=size)
     ic = np.cos(inc)
     ip = 0.5 * (1.0 + ic * ic)
-    D_max=0.6 * np.min(args.relative_sensitivities)
-    uniform_random = np.random.uniform(0, 1, size=size)
-    distance = D_max * (uniform_random)**(1/3) 
+
 
 
     # calculate the toa, poa, and amplitude of each sample,
@@ -85,8 +150,9 @@ while len(all_keys)<=args.samples:
         fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
         sp, sc = fp * ip, fc * ic
         data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs #Amplitude without uncertainities
-        snr_sp = (rs*sp/distance) 
-        snr_sc = (rs*sc/distance) 
+        mass_distance_factor = ((chirp_mass(m1_samples, m2_samples)**(5/3))/distance)
+        snr_sp = (rs*sp*mass_distance_factor) 
+        snr_sc = (rs*sc*mass_distance_factor)
         data[ifo]['op'] = np.arctan2(snr_sc, snr_sp) #Phase without uncertainties
         fsize = snr_sp.shape
         # Add noise to the SNR measurements
@@ -98,9 +164,9 @@ while len(all_keys)<=args.samples:
         # Add noise to the phase and time measurements
         # Values obtained from modelling time and phase unc, t_unc given by Fairhurst 2009
         p_unc = args.phase_uncertainty/data[ifo]['snr']
-        t_unc = 1/(2*np.pi*args.bandwidth*data[ifo]['snr'])
+        t_unc = 1/(2*np.pi*bw*data[ifo]['snr'])
         rho = args.time_phase_correlation
-        # Cholensky Decomposition
+        # Cholensky Decomposition, for a bivariate gaussian between time and phase
         l22_factor = np.sqrt(1.0 - rho**2)
         z_p = normal(size=fsize)
         z_t = normal(size=fsize)
