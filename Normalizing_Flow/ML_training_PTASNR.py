@@ -33,7 +33,7 @@ for file in files:
                 f"dp_{ifo}",
                 f"sr_{ifo}"
             ])
-        keys.extend([f"minsnr"])
+        keys.extend([f"refsnr"])
         print(keys)
         for key in keys:
             data[f"{key}"] = f[ref_ifo]["param_bin"][key][:]
@@ -49,22 +49,13 @@ for file in files:
         for i in range(n_dims):
             if i % 3 == 1:  # Phase parameter
                 bounds.append([0, 2*np.pi])
-            elif i % 3 == 2: # Signal ratio parameter
-                bounds.append([data_array[:, i].min() - 1e-6, 
-                            data_array[:, i].max() + 1e-6])
-                smin =np.append(smin, np.exp(data_array[:, i].min() - 1e-6))
-                smax = np.append(smax,np.exp(data_array[:, i].max() + 1e-6))
-            else: # Time parameter
+            else: 
                 bounds.append([data_array[:, i].min() - 1e-6, 
                             data_array[:, i].max() + 1e-6])
         
         return np.array(bounds, dtype=np.float32), smin, smax
 
 
-    snrmin = np.array([])
-    snrmax = np.array([])
-    snrmin =np.append(snrmin, np.exp(data_array[:, -1].min() - 1e-6))
-    snrmax = np.append(snrmax,np.exp(data_array[:, -1].max() + 1e-6))
     # Find the bounds for each parameter as well as the maximum and minimum signal ratios in the training data. These are used to measure the volume later in the search.
     bounds, smin, smax = create_bounds(data_array)
     # Train the Flow on the data.
@@ -81,9 +72,7 @@ for file in files:
         flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=140, num_bins=25)
         history = flow.fit(data_array, n_samples=1000000)
 
-    srmin = min(smin)
-    srmax = max(smax)
     hist_max = max(flow.prob(data_array))
     # Save the model paramters to a file to be later used as a lookup.
-    ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "smin": srmin, "smax": srmax, "snrmin": snrmin, "snrmax": snrmax, "hist_max": hist_max})
+    ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "hist_max": hist_max})
     ml_stat.to_file("../Files/PTASNR/PHASE_TIME_AMP_%s_FLOW.h5" % ''.join(ifos), group_name="model")

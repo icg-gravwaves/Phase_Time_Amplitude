@@ -79,4 +79,4 @@ for file in files:
     hist_max = max(flow.prob(data_array))
     # Save the model paramters to a file to be later used as a lookup.
     ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "smin": srmin, "smax": srmax, "hist_max": hist_max})
-    ml_stat.to_file("../Files/PHASE_TIME_AMP_%s_FLOW.h5" % ''.join(ifos), group_name="model")
+    ml_stat.to_file("../Files/4det/PHASE_TIME_AMP_%s_FLOW.h5" % ''.join(ifos), group_name="model")
