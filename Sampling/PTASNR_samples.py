@@ -130,14 +130,14 @@ while len(all_keys)<=args.samples:
         snrs_sq += data[ifo]['snr']**2
     net_snr = snrs_sq**0.5
     
-    # Applying thresholding, individual detector SNR > 5,
-    # network SNR > 9.
+    # Applying thresholding, individual detector SNR > 4,
+
     keep = None 
     for ifo in args.ifos:
         if keep is None:
-            keep = (net_snr >= 9) & (data[ifo]['snr']>= 4 )
+            keep = (data[ifo]['snr']>= 4 )
         else:
-            keep = keep & (net_snr >= 9) & (data[ifo]['snr']>= 4 )
+            keep = keep & (data[ifo]['snr']>= 4 )
 
     #Calculate and sum the weights for each bin
     # use first ifo as reference for weights
