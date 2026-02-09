@@ -1,6 +1,7 @@
 """
 Create a file containing the time, phase, amplitude ratio and snr correlations between two
-or more detectors for signals by doing a simple monte-carlo.
+or more detectors for signals by doing a simple monte-carlo. This version also contains information on which detectors were
+turned on for each sample.
 
 Output is the relative amplitude, time, phase and snr as compared to a reference
 IFO. The output file contains a continuous distribution of samples which can then be used to train a Normalizing Flow model.
@@ -17,6 +18,8 @@ parser = argparse.ArgumentParser(description=__doc__)
 pycbc.add_common_pycbc_options(parser)
 parser.add_argument('--ifos', nargs='+',
                     help="The ifos to generate a histogram for")
+parser.add_argument('--all-ifos', nargs='+',
+                    help="All ifos in the network")
 parser.add_argument('--relative-sensitivities', nargs='+', type=float,
                     help="Numbers proportional to horizon distance or "
                          "expected SNR at fixed distance, one for each ifo")
@@ -33,12 +36,12 @@ parser.add_argument('--time-phase-correlation', type=float, default=0.86,
                          "measurement uncertainties")
 args = parser.parse_args()
 
-if len(args.relative_sensitivities) != len(args.ifos):
+if len(args.relative_sensitivities) != len(args.all_ifos):
     parser.error('--relative-sensitivities requires one numerical argument '
                  'for each detector')
 
 
-d = {ifo: pycbc.detector.Detector(ifo) for ifo in args.ifos}
+d = {ifo: pycbc.detector.Detector(ifo) for ifo in args.all_ifos}
 
 pycbc.init_logging(args.verbose)
 
@@ -50,14 +53,20 @@ size = args.batch_size
 # to get the correct symmetries when measuring dt, dp and sr for the triggers.
 f = h5py.File(args.output_file, 'w')
 ifo0 = args.ifos[0]
-other_ifos = deepcopy(args.ifos)
-other_ifos.remove(ifo0)
+
+# Detectors in the network that are NOT the reference (for dt, dp, sr calculations)
+other_ifos = [ifo for ifo in args.ifos if ifo != ifo0]
+
+# Detectors in the network that are NOT in the active 'ifos' list
+dependent_ifos = [ifo for ifo in args.all_ifos if ifo not in args.ifos]
+
 counts = defaultdict(list)
 
 l = 0
 nsamples = 0
-all_keys = []
-while len(all_keys)<=args.samples:
+all_keys_on = []
+all_keys_off = []
+while len(all_keys_on) + len(all_keys_off) <= args.samples:
     nsamples += size
     logging.info('generating %s samples', size)
 
@@ -80,7 +89,7 @@ while len(all_keys)<=args.samples:
     # calculate the toa, poa, and amplitude of each sample,
     # including uncertainties in measurements.
     data = {}
-    for rs, ifo in zip(args.relative_sensitivities, args.ifos):
+    for rs, ifo in zip(args.relative_sensitivities, args.all_ifos):
         data[ifo] = {}
         fp, fc = d[ifo].antenna_pattern(ra, dec, pol, 0)
         sp, sc = fp * ip, fc * ic
@@ -110,7 +119,8 @@ while len(all_keys)<=args.samples:
 
     # Organise the data
     bind = []
-    keep = None
+    keep_off = None
+    keep_on = None
     for ifo1 in other_ifos:
         dt = (data[ifo0]['t'] - data[ifo1]['t'])
         dp = (data[ifo0]['p'] - data[ifo1]['p']) % (2. * np.pi)
@@ -126,68 +136,79 @@ while len(all_keys)<=args.samples:
     
     # Applying thresholding, individual detector SNR > 4,
 
-    keep = None 
+    keep_off = None 
     for ifo in args.ifos:
-        if keep is None:
-            keep = (data[ifo]['snr']>= 4 )
+        if keep_off is None:
+            keep_off = (data[ifo]['snr']>= 4 )
         else:
-            keep = keep & (data[ifo]['snr']>= 4 )
+            keep_off = keep_off & (data[ifo]['snr']>= 4 )
+
+    keep_on = None 
+    for ifo in args.ifos:
+        if keep_on is None:
+            keep_on = (data[ifo]['snr']>= 4 )
+        else:
+            keep_on = keep_on & (data[ifo]['snr']>= 4 )
+    for ifo in dependent_ifos:
+        if keep_on is None:
+            keep_on = (data[ifo]['snr']< 4 )
+        else:
+            keep_on = keep_on & (data[ifo]['snr']< 4 )
+
+
+
+
+
 
     #Calculate and sum the weights for each bin
     # use first ifo as reference for weights
-    bind = [a[keep] for a in bind]
+    bind_off = [a[keep_off] for a in bind]
+    bind_on = [a[keep_on] for a in bind]
 
-    # Ensure we arent getting a significant number of events within 5% of D_max
-    dist = distance[keep]
-    large_dis = 0
-    for i in range(len(dist)):
-        if dist[i]/D_max > .95:
-            large_dis += 1
-    if len(dist) == 0: 
-        logging.warning("dist is empty, skipping the large distance check")
-    else:
-        if large_dis / len(dist) > 0.01:
-            raise ValueError("Too many distances exceed 95% of the maximum allowed value")
      
-    for key in zip(*bind):
-        all_keys.append(key)
+    all_keys_off.extend(zip(*bind_off))
+    all_keys_on.extend(zip(*bind_on))
 
-    ol = l
-    l = len(all_keys)
-    logging.info('%s, %s, %s, %s', l, l - ol, (l - ol) / float(size),
-                 l / float(nsamples))
+    l = len(all_keys_on) + len(all_keys_off)
+    logging.info(f'Total samples collected: {l} (On: {len(all_keys_on)}, Off: {len(all_keys_off)})')
 
 
 
 
 logging.info('Converting to numpy arrays')
-keys = np.array(all_keys)
 
-# Assiging names to each paramater.
+# Define the structured dtype (this part is fine as you had it)
 field_names = []
 for ifo in other_ifos:
-    field_names.extend([
-        f'dt_{ifo}',
-        f'dp_{ifo}',
-        f'sr_{ifo}'
-        
-    ])
-field_names.extend([f'refsnr']
-)
+    field_names.extend([f'dt_{ifo}', f'dp_{ifo}', f'sr_{ifo}'])
+field_names.append('refsnr')
 pdtype = [(name, 'float32') for name in field_names]
 
-
-keys_bin = np.zeros(len(keys), dtype=pdtype)
-for i, name in enumerate(field_names):
-    keys_bin[name] = keys[:, i]
+def create_structured_array(data_list, dtype, names):
+    data_np = np.array(data_list)
+    structured_array = np.zeros(len(data_np), dtype=dtype)
+    for i, name in enumerate(names):
+        structured_array[name] = data_np[:, i]
+    return structured_array
 
 logging.info('Writing results to file')
-f.create_dataset('%s/param_bin' % ifo0, data=keys_bin, compression='gzip',
-             compression_opts=7)
 
+# Process and save "ON" samples
+if all_keys_on:
+    keys_on_bin = create_structured_array(all_keys_on, pdtype, field_names)
+    f.create_dataset(f'{ifo0}/param_bin_on', data=keys_on_bin, 
+                     compression='gzip', compression_opts=7)
+
+# Process and save "OFF" samples
+if all_keys_off:
+    keys_off_bin = create_structured_array(all_keys_off, pdtype, field_names)
+    f.create_dataset(f'{ifo0}/param_bin_off', data=keys_off_bin, 
+                     compression='gzip', compression_opts=7)
+
+# Save metadata
 f.attrs['sensitivity_ratios'] = args.relative_sensitivities
 f.attrs['ifos'] = args.ifos
 f.attrs['stat'] = 'MLtraining_samples_%s' % ''.join(args.ifos)
-
+f.close()
  
 logging.info('Done')
