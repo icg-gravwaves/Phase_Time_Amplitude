@@ -196,13 +196,13 @@ logging.info('Writing results to file')
 # Process and save "ON" samples
 if all_keys_on:
     keys_on_bin = create_structured_array(all_keys_on, pdtype, field_names)
-    f.create_dataset(f'{ifo0}/param_bin_on', data=keys_on_bin, 
+    f.create_dataset(f'{ifo0}/param_bin_1', data=keys_on_bin, 
                      compression='gzip', compression_opts=7)
 
 # Process and save "OFF" samples
 if all_keys_off:
     keys_off_bin = create_structured_array(all_keys_off, pdtype, field_names)
-    f.create_dataset(f'{ifo0}/param_bin_off', data=keys_off_bin, 
+    f.create_dataset(f'{ifo0}/param_bin_0', data=keys_off_bin, 
                      compression='gzip', compression_opts=7)
 
 # Save metadata
