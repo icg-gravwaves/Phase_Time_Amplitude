@@ -5,8 +5,8 @@
 import argparse, numpy as np, logging
 from collections import defaultdict
 from copy import deepcopy
-from Normalizing_Flow.Additional_Science.ml_stat_DD import MLStatistic
-from Normalizing_Flow.Additional_Science.ml_stat_DD import NormalizingFlow
+from ml_stat_universal import MLStatistic
+from ml_stat_universal import NormalizingFlow
 import torch
 import h5py
 
@@ -37,8 +37,6 @@ for file in files:
         for key in keys:
             data_on[f"{key}"] = f[ref_ifo]["param_bin_on"][key][:]
             data_off[f"{key}"] = f[ref_ifo]["param_bin_off"][key][:]
-        print(data_on)
-        print(data_off)
     # Organise data and give bounds used.
     data_array_on = np.array([v for v in data_on.values()]).T
     data_array_off = np.array([v for v in data_off.values()]).T
@@ -76,26 +74,25 @@ for file in files:
 
     # Find the bounds for each parameter as well as the maximum and minimum signal ratios in the training data. These are used to measure the volume later in the search.
     bounds, smin, smax = create_bounds(data_array_on, data_array_off)
+    datasets = {
+        1.0: data_array_on,
+        0.0: data_array_off
+    }
     # Train the Flow on the data.
     if len(ifos) == 2:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, num_bins=4)
-        history = flow.fit(x=data_array_on, y=data_array_off, n_samples=10000)
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=10, num_bins=4, conditions=1)
+        history = flow.fit(datasets, n_samples=10000)
     elif len(ifos) == 3:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=80, num_bins=15)
-        history = flow.fit(x=data_array_on, y=data_array_off, n_samples=500000)
-    elif len(ifos) == 4:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=128, num_bins=20)
-        history = flow.fit(x=data_array_on, y=data_array_off, n_samples=700000)
-    elif len(ifos) == 5:
-        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=140, num_bins=25)
-        history = flow.fit(x=data_array_on, y=data_array_off, n_samples=1000000)
+        flow = NormalizingFlow(len(keys), bounds=bounds, n_neurons=80, num_bins=15, conditions=0)
+        history = flow.fit(datasets, n_samples=500000)
+ 
 
     srmin = min(smin)
     srmax = max(smax)
-    p_on  = flow.prob(data_array_on,  condition=np.zeros((data_array_on.shape[0], 1)))
-    p_off = flow.prob(data_array_off, condition=np.ones((data_array_off.shape[0], 1)))
+    p_on  = flow.prob(data_array_on,  condition=np.full((len(data_array_on), 1), 1.0))
+    p_off = flow.prob(data_array_off, condition=np.full((len(data_array_off), 1), 0.0))
 
     hist_max = max(p_on.max(), p_off.max())
     # Save the model paramters to a file to be later used as a lookup.
     ml_stat = MLStatistic(model=flow, metadata={"ifos": ifos, "relfac": relfac, "stat": "phasetd_newsnr_%s" % ''.join(ifos), "smin": srmin, "smax": srmax, "hist_max": hist_max, "on_vs_off": on_vs_off})
-    ml_stat.to_file("./Test.hdf" % ''.join(ifos), group_name="model")
+    ml_stat.to_file("../../Files/Det_Dep/PHASE_TIME_AMP_%s_DD.h5.hdf" % ''.join(ifos), group_name="model")

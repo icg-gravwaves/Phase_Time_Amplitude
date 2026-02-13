@@ -109,17 +109,6 @@ while len(all_keys)<=args.samples:
     # use first ifo as reference for weights
     bind = [a[keep] for a in bind]
 
-    # Ensure we arent getting a significant number of events within 5% of D_max
-    dist = distance[keep]
-    large_dis = 0
-    for i in range(len(dist)):
-        if dist[i]/D_max > .95:
-            large_dis += 1
-    if len(dist) == 0: 
-        logging.warning("dist is empty, skipping the large distance check")
-    else:
-        if large_dis / len(dist) > 0.01:
-            raise ValueError("Too many distances exceed 95% of the maximum allowed value")
      
     for key in zip(*bind):
         all_keys.append(key)

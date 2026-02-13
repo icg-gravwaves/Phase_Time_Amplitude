@@ -9,7 +9,7 @@ def main():
         "--samples", "100000.",
         "--batch-size", "1000000",
         "--seed", "105",
-        "--output-file", "./Test.hdf",
+        "--output-file", "../../Files/Det_Dep/HV_Samples_DD.hdf",
         "--verbose"
     ]
     subprocess.run(cmd)
