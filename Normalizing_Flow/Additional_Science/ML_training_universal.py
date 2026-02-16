@@ -147,10 +147,10 @@ def main():
                         help="HDF5 group name to write the model into (default: model)")
 
     # Training hyperparams (defaults match your examples)
-    parser.add_argument("--n-samples", type=int, default=20000,
+    parser.add_argument("--n-samples", type=int, default=100000,
                         help="n_samples passed into flow.fit(...)")
-    parser.add_argument("--n-neurons", type=int, default=10)
-    parser.add_argument("--num-bins", type=int, default=4)
+    parser.add_argument("--n-neurons", type=int, default=128)
+    parser.add_argument("--num-bins", type=int, default=20)
     parser.add_argument("--conditions", type=int, default=None,
                         help="Override auto-detected conditions (0 or 1). Usually leave unset.")
     args = parser.parse_args()

@@ -66,7 +66,7 @@ l = 0
 nsamples = 0
 all_keys_on = []
 all_keys_off = []
-while len(all_keys_on) + len(all_keys_off) <= args.samples:
+while np.min([len(all_keys_on), len(all_keys_off)]) <= args.samples:
     nsamples += size
     logging.info('generating %s samples', size)
 
