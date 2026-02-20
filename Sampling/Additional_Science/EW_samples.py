@@ -123,8 +123,8 @@ while any(len(all_keys_by_cut[c]) < args.samples for c in cutoffs_list):
 
     """ Mass Model """
 
-    m1_samples = np.random.uniform(1, 80, size=size)
-    m2_samples = np.random.uniform(1, 80, size=size)
+    m1_samples = np.random.uniform(1, 5, size=size)
+    m2_samples = np.random.uniform(1, 5, size=size)
     # Ensure m1 >= m2 for consistency
     mask = m2_samples > m1_samples
     m1_samples[mask], m2_samples[mask] = m2_samples[mask], m1_samples[mask]
@@ -134,7 +134,7 @@ while any(len(all_keys_by_cut[c]) < args.samples for c in cutoffs_list):
 
     """ Distance Model """
 
-    D_max=50 * np.min(args.relative_sensitivities)
+    D_max=1.0 * np.min(args.relative_sensitivities)
     uniform_random = np.random.uniform(0, 1, size=size)
     distance = D_max * (uniform_random)**(1/3) 
 
