@@ -230,9 +230,11 @@ class NormalizingFlow(MLModel):
                     val_loss_epoch += loss.item()
             
             history["validation_loss"].append(val_loss_epoch / len(val_loader))
-
+       
             if lr_annealing:
                 scheduler.step()
+        self.flow.eval()
+        return history
 
     def sample(self, n_samples: int = 1, conditional: np.ndarray | None = None) -> np.ndarray:
         """Sample from the model.

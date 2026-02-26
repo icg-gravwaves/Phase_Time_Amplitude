@@ -7,6 +7,8 @@ import h5py
 from ml_stat_universal import MLStatistic, NormalizingFlow
 
 
+""" Select the paramters to train the flow on"""
+
 def build_keys(ifos, ref_ifo):
     other_ifos = deepcopy(ifos)
     other_ifos.remove(ref_ifo)
@@ -15,12 +17,15 @@ def build_keys(ifos, ref_ifo):
         keys.extend([f"dt_{ifo}", f"dp_{ifo}", f"sr_{ifo}"])
     return keys
 
+"""Check to see if the samples take a conditional varaiable"""
 
-def is_param_bin_group(name: str) -> bool:
+def is_conditional(name: str) -> bool:
     return name == "param_bin" or name.startswith("param_bin_")
 
 
-def parse_cond_from_group(name: str):
+"""Retrive the conditional variable value from the group name"""
+
+def conditional_value(name: str):
     """
     Returns:
       (cond_value, is_unconditional)
@@ -38,17 +43,13 @@ def parse_cond_from_group(name: str):
         ) from e
 
 
+"""Load data from file"""
+
 def load_datasets_from_file(f: h5py.File, ref_ifo: str, keys):
-    """
-    Returns:
-      datasets: dict[float, np.ndarray]
-      n_conditions: int (0 or 1)
-      condition_type: "none" | "numeric"
-      unconditional_present: bool
-    """
+    
     ref = f[ref_ifo]
 
-    group_names = [n for n in ref.keys() if is_param_bin_group(n)]
+    group_names = [n for n in ref.keys() if is_conditional(n)]
     if not group_names:
         raise ValueError(f"No param_bin / param_bin_* groups found under '{ref_ifo}'")
 
@@ -57,15 +58,13 @@ def load_datasets_from_file(f: h5py.File, ref_ifo: str, keys):
     conditional_present = False
 
     for gname in sorted(group_names):
-        cond, is_uncond = parse_cond_from_group(gname)
+        cond, is_uncond = conditional_value(gname)
         g = ref[gname]
 
-        # build (N, D)
         arr = np.array([g[k][:] for k in keys]).T
 
         if is_uncond:
             unconditional_present = True
-            # store under a dummy key, but we will train unconditional (conditions=0)
             datasets[0.0] = arr
         else:
             conditional_present = True
@@ -81,20 +80,9 @@ def load_datasets_from_file(f: h5py.File, ref_ifo: str, keys):
     condition_type = "none" if n_conditions == 0 else "numeric"
     return datasets, n_conditions, condition_type, unconditional_present
 
+"""Define your parameter bounds"""
 
-def merge_datasets(dst: dict, src: dict):
-    """
-    Concatenate arrays for matching condition keys.
-    """
-    for k, v in src.items():
-        if k in dst:
-            dst[k] = np.vstack([dst[k], v])
-        else:
-            dst[k] = v
-    return dst
-
-
-def create_global_bounds(datasets: dict, n_dims: int):
+def create_bounds(datasets: dict, n_dims: int):
     """
     Bounds across ALL datasets, with dp fixed to [0, 2π].
     Returns: bounds (D,2) float32, srmin, srmax (linear space)
@@ -121,11 +109,9 @@ def create_global_bounds(datasets: dict, n_dims: int):
     srmax = float(np.max(smaxs)) if smaxs else 0.0
     return bounds, srmin, srmax
 
-
+"""Max probability density across all datasets for thresholding"""
 def compute_hist_max(flow, datasets: dict, n_conditions: int):
-    """
-    max probability density across all datasets.
-    """
+    
     hmax = -np.inf
     for cond, arr in datasets.items():
         if n_conditions == 0:
@@ -159,14 +145,13 @@ def main():
     torch.set_num_interop_threads(1)
     torch.set_default_dtype(torch.float64)
 
-    merged = None
     ifos = None
     relfac = None
     n_conditions = None
     condition_type = None
-    keys = None
+   
 
-    # Read and merge all input files
+    """Read input file"""
     for fname in args.input_files:
         with h5py.File(fname, "r") as f:
             ifos_here = list(f.attrs["ifos"])
@@ -176,38 +161,20 @@ def main():
 
             datasets_here, ncond_here, ctype_here, _ = load_datasets_from_file(f, ref_ifo, keys_here)
 
-            if merged is None:
-                merged = {k: v for k, v in datasets_here.items()}
-                ifos = ifos_here
-                relfac = relfac_here
-                n_conditions = ncond_here
-                condition_type = ctype_here
-                keys = keys_here
-            else:
-                if ifos_here != ifos:
-                    raise ValueError(f"IFO mismatch across inputs: {ifos_here} vs {ifos}")
-                if keys_here != keys:
-                    raise ValueError("Key mismatch across inputs (unexpected).")
-                if ncond_here != n_conditions:
-                    raise ValueError("Cannot mix conditional and unconditional training files in one run.")
-                merged = merge_datasets(merged, datasets_here)
+            
+            data = {k: v for k, v in datasets_here.items()}
+            ifos = ifos_here
+            relfac = relfac_here
+            n_conditions = ncond_here
+            condition_type = ctype_here
+            
 
-    if merged is None:
-        raise RuntimeError("No data loaded (this should be impossible).")
-
-    # Override conditions if requested
-    if args.conditions is not None:
-        if args.conditions not in (0, 1):
-            raise ValueError("--conditions must be 0 or 1")
-        n_conditions = args.conditions
-        condition_type = "none" if n_conditions == 0 else "numeric"
-
-    # Build bounds from merged datasets
-    any_arr = next(iter(merged.values()))
+    """Calculate bounds of data"""
+    any_arr = next(iter(data.values()))
     n_dims = any_arr.shape[1]
-    bounds, srmin, srmax = create_global_bounds(merged, n_dims)
+    bounds, srmin, srmax = create_bounds(data, n_dims)
 
-    # Train
+    """Train the flow"""
     flow = NormalizingFlow(
         dims=n_dims,
         bounds=bounds,
@@ -215,15 +182,15 @@ def main():
         num_bins=args.num_bins,
         conditions=n_conditions
     )
-    _history = flow.fit(merged, n_samples=args.n_samples)
+    history = flow.fit(data, n_samples=args.n_samples)
 
-    # hist_max and optional binary ratio
-    hist_max = compute_hist_max(flow, merged, n_conditions=n_conditions)
+
+    """Add extra information to the model metadata and write to file"""
+    hist_max = compute_hist_max(flow, data, n_conditions=n_conditions)
 
     on_vs_off = None
-    if n_conditions == 1 and (0.0 in merged) and (1.0 in merged):
-        on_vs_off = len(merged[1.0]) / max(1, len(merged[0.0]))
-
+    if n_conditions == 1 and (0.0 in data) and (1.0 in data):
+        on_vs_off = len(data[1.0]) / max(1, len(data[0.0]))
     meta = {
         "ifos": ifos,
         "relfac": relfac,
@@ -232,7 +199,7 @@ def main():
         "smax": srmax,
         "hist_max": hist_max,
         "condition_type": condition_type,
-        "condition_values": np.array(sorted(merged.keys()), dtype=np.float64),
+        "condition_values": np.array(sorted(data.keys()), dtype=np.float64),
     }
     if on_vs_off is not None:
         meta["on_vs_off"] = float(on_vs_off)
@@ -244,7 +211,7 @@ def main():
     print("IFOs:", ifos)
     print("n_dims:", n_dims)
     print("conditions:", n_conditions, f"({condition_type})")
-    print("condition_values:", sorted(merged.keys()))
+    print("condition_values:", sorted(data.keys()))
     if on_vs_off is not None:
         print("on_vs_off:", on_vs_off)
     print("hist_max:", hist_max)

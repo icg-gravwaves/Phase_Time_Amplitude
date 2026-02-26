@@ -3,13 +3,13 @@ import subprocess
 def main():
     cmd = [
         "python", "Detector_dependent.py",
-        "--ifos", "H1", "V1",  
+        "--ifos", "L1", "H1", "V1",  
         "--all-ifos", "L1", "H1", "V1",
         "--relative-sensitivities", "1.0", "0.94", "0.32", 
-        "--samples", "200000.",
+        "--samples", "500000.",
         "--batch-size", "1000000",
         "--seed", "105",
-        "--output-file", "../../Files/Det_Dep/HV_Samples_DD.hdf",
+        "--output-file", "../../Files/Det_Dep/HLV_Samples_DD.hdf",
         "--verbose"
     ]
     subprocess.run(cmd)
