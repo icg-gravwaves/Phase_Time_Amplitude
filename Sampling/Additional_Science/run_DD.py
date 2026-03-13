@@ -6,7 +6,7 @@ def main():
         "--ifos", "L1", "H1", "V1",  
         "--all-ifos", "L1", "H1", "V1",
         "--relative-sensitivities", "1.0", "0.94", "0.32", 
-        "--samples", "500000.",
+        "--samples", "300000.",
         "--batch-size", "1000000",
         "--seed", "105",
         "--output-file", "../../Files/Det_Dep/HLV_Samples_DD.hdf",

@@ -130,30 +130,32 @@ while np.min([len(all_keys_on), len(all_keys_off)]) <= args.samples:
         srbin = sr
         bind += [dtbin, dpbin, srbin]
 
-    snr_ref = np.log(data[ifo0]['snr'])
-    bind += [snr_ref]
-        
+    # Measure network SNR.
+    snrs_sq=np.zeros(len(data[ifo0]['snr']))
+    for ifo in args.ifos:
+        snrs_sq += data[ifo]['snr']**2
+    net_snr = snrs_sq**0.5
     
-    # Applying thresholding, individual detector SNR > 4,
+    # Applying thresholding, individual detector SNR > 5, net > 9
 
     keep_off = None 
     for ifo in args.ifos:
         if keep_off is None:
-            keep_off = (data[ifo]['snr']>= 4 )
+            keep_off = (data[ifo]['snr']>= 5 ) & (net_snr >=9)
         else:
-            keep_off = keep_off & (data[ifo]['snr']>= 4 )
+            keep_off = keep_off & (data[ifo]['snr']>= 5) & (net_snr >=9)
 
     keep_on = None 
     for ifo in args.ifos:
         if keep_on is None:
-            keep_on = (data[ifo]['snr']>= 4 )
+            keep_on = (data[ifo]['snr']>= 5 ) & (net_snr >=9)
         else:
-            keep_on = keep_on & (data[ifo]['snr']>= 4 )
+            keep_on = keep_on & (data[ifo]['snr']>= 5 ) & (net_snr >=9)
     for ifo in dependent_ifos:
         if keep_on is None:
-            keep_on = (data[ifo]['snr']< 4 )
+            keep_on = (data[ifo]['snr']< 5 )
         else:
-            keep_on = keep_on & (data[ifo]['snr']< 4 )
+            keep_on = keep_on & (data[ifo]['snr']< 5 )
 
 
 
@@ -181,7 +183,6 @@ logging.info('Converting to numpy arrays')
 field_names = []
 for ifo in other_ifos:
     field_names.extend([f'dt_{ifo}', f'dp_{ifo}', f'sr_{ifo}'])
-field_names.append('refsnr')
 pdtype = [(name, 'float32') for name in field_names]
 
 def create_structured_array(data_list, dtype, names):

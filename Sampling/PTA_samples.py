@@ -87,6 +87,7 @@ while len(all_keys)<=args.samples:
         data[ifo]['amp'] = (sp**2+sc**2)**0.5*rs #Amplitude without uncertainities
         snr_sp = (rs*sp/distance) 
         snr_sc = (rs*sc/distance) 
+        data[ifo]['op'] = np.arctan2(snr_sc, snr_sp) #Phase without uncertainties
         fsize = snr_sp.shape
         # Add noise to the SNR measurements
         normal_sp = normal(scale=1, size=fsize)
@@ -105,7 +106,7 @@ while len(all_keys)<=args.samples:
         z_t = normal(size=fsize)
         normal_dp = p_unc * z_p
         normal_dt = (rho * t_unc * z_p) + (t_unc * l22_factor * z_t)
-        data[ifo]['p'] = (np.arctan2(snr_sc, snr_sp) + normal_dp) % (2. * np.pi)
+        data[ifo]['p'] = (data[ifo]['op'] + normal_dp) % (2. * np.pi)
         data[ifo]['t'] = d[ifo].time_delay_from_earth_center(ra, dec, 0) + normal_dt
         
 
