@@ -12,7 +12,7 @@ This was used to produce the MODIFIED data set presented in the paper. For the s
 
 ---
 
-A number of additional changes were included for these samples to then train a normalzing flow. The resulting sampler file incorporating these can be found here:
+A number of additional changes were included for these samples to then train a normalizing flow. The resulting sampler file incorporating these can be found here:
 
 [Flow Sampler](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_samples.py)
 
@@ -24,7 +24,10 @@ For a particular distribution you will need to give arguments defining the ifos 
 
 # Normalizing Flow
 
-For the FLOW data set the samples generated then need to be used to train the normalzing flow model. This can be done using the following file:
-https://icg-gravwaves.github.io/Phase_Time_Amplitude/Normalizing_Flow/ML_training.py
-With this only requiring the output file from the sampler as its only argument. An additional statistic file is required to run this which can be found here:
-https://icg-gravwaves.github.io/Phase_Time_Amplitude/Normalizing_Flow/ml_stat.py
+For the FLOW data set the samples generated then need to be used to train the normalizing flow model. This can be done using the following file:
+
+[Normalizing Flow Trainer](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Normalizing_Flow/ML_training.py)
+
+With this requiring the output file from the sampler as its only argument. An additional stat file is required to run this which can be found here:
+
+[Normalizing Flow Stat File](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Normalizing_Flow/ml_stat.py)
