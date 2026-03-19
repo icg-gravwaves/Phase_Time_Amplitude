@@ -20,7 +20,7 @@ This was used to produce the FLOW data set presented in the paper. For 2 and 3 d
 
 ---
 
-For a particular distribution you will need to give arguments defining the ifos and relative sensitivities. In this paper, for three detctor searches we used the following reltaive sensitivities, 1.0, 0.94 and 0.32 for L1, H1 and V1 respectively. 
+For a particular distribution you will need to give arguments defining the ifos and relative sensitivities. In this paper, for three detctor searches we used the following relative sensitivities, 1.0, 0.94 and 0.32 for L1, H1 and V1 respectively. 
 
 # Normalizing Flow
 
