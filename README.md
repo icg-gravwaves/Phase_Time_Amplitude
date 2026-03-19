@@ -10,11 +10,15 @@ In this project we relaxed  a number of simplifying assumptions in the current M
 
 This was used to produce the MODIFIED data set presented in the paper. For the search we ran with these samples, our histogram files contained approximately 1,000,000 samples.
 
+---
+
 A number of additional changes were included for these samples to then train a normalzing flow. The resulting sampler file incorporating these can be found here:
 
 [Flow Sampler](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_samples.py)
 
 This was used to produce the FLOW data set presented in the paper. For 2 and 3 detector cases we found 500,000 samples were sufficient for training the normalizing flow.
+
+---
 
 For a particular distribution you will need to give arguments defining the ifos and relative sensitivities. In this paper, for three detctor searches we used the following reltaive sensitivities, 1.0, 0.94 and 0.32 for L1, H1 and V1 respectively. 
 
