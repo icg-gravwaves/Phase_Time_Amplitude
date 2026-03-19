@@ -5,7 +5,7 @@ This is the data release for the paper "Normalizing Flows for Density Estimation
 # Sampling
 
 In this project we relaxed  a number of simplifying assumptions in the current Monte-Carlo sampling of simulated signals. The resulting sampler incorporating these changes can be found here: 
-https://icg-gravwaves.github.io/Phase_Time_Amplitude/Sampling/PTA_sampling_MODIFIED.py.
+[https://icg-gravwaves.github.io/Phase_Time_Amplitude/Sampling/PTA_sampling_MODIFIED.py](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_sampling_MODIFIED.py)
 This was used to produce the MODIFIED data set presented in the paper.
 
 A number of additional changes were included for these samples to then train a normalzing flow. The resulting sampler file incorporating these can be found here:
