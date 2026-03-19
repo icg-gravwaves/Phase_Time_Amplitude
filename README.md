@@ -1,6 +1,6 @@
 # Phase_Time_Amplitude
 
 Welcome! This project looks at using generative machine learning models called normalizing flows for density evaluation in PyCBC searches for compact binary coalescences.
-In this repository you can find the code used to both generate samples (Sampling Folder) and train a normalizing flow on those samples (Normalizing Flow Folder). In addition it also contains ongoing work on how we incorporate uncertainities into the sampling (Uncertainities Folder).
+In this repository you can find the code used to both generate samples (Sampling Folder) and train a normalizing flow (Normalizing Flow Folder) which were used for analyses within this project.
 
 Two PyCBC searches were done during this project, one involving some modifications to how we sample but still using histogram-based density estimators, the other uses a normlazing flow trained on these modified samples. There are two separate sampling files to account for these as they are incorporated into the PyCBC serach in slightly different ways. If one wishes to replicate the searches, you would need to clone and install the MODIFIED and PTA (normalizing flow) branches in this repository: https://github.com/SamInsley/pycbc.git, which make modifications to the exisiting PyCBC search to incorporate these methodologies.
