@@ -8,7 +8,7 @@ In this project we relaxed  a number of simplifying assumptions in the current M
 
 [Modified Sampler](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_sampling_MODIFIED.py)
 
-This was used to produce the MODIFIED data set presented in the paper. For the search ran with these samples, our histogram file contained approxxinately 1,000,000 samples.
+This was used to produce the MODIFIED data set presented in the paper. For the search we ran with these samples, our histogram files contained approximately 1,000,000 samples.
 
 A number of additional changes were included for these samples to then train a normalzing flow. The resulting sampler file incorporating these can be found here:
 
