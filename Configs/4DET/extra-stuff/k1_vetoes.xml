@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE LIGO_LW SYSTEM "http://ldas-sw.ligo.caltech.edu/doc/ligolwAPI/html/ligolw_dtd.txt">
+<LIGO_LW>
+	<Table Name="segment_definer:table">
+		<Column Name="ifos" Type="lstring"/>
+		<Column Name="name" Type="lstring"/>
+		<Column Name="version" Type="int_4s"/>
+		<Column Name="comment" Type="lstring"/>
+		<Column Name="process:process_id" Type="int_8s"/>
+		<Column Name="segment_def_id" Type="int_8s"/>
+		<Stream Name="segment_definer:table" Delimiter="," Type="Local">
+			"V1","CAT_2",1,"",0,0
+			"V1","CAT_H",1,"",0,1
+		</Stream>
+	</Table>
+	<Table Name="segment_summary:table">
+		<Column Name="process:process_id" Type="int_8s"/>
+		<Column Name="segment_definer:segment_def_id" Type="int_8s"/>
+		<Column Name="segment_sum_id" Type="int_8s"/>
+		<Column Name="start_time" Type="int_4s"/>
+		<Column Name="end_time" Type="int_4s"/>
+		<Column Name="comment" Type="lstring"/>
+		<Stream Name="segment_summary:table" Delimiter="," Type="Local">
+			0,0,0,1397915979,1397935979,"",
+			0,1,1,1397915979,1397935979,""
+		</Stream>
+	</Table>
+	<Table Name="segment:table">
+		<Column Name="process:process_id" Type="int_8s"/>
+		<Column Name="segment_definer:segment_def_id" Type="int_8s"/>
+		<Column Name="segment_id" Type="int_8s"/>
+		<Column Name="start_time" Type="int_4s"/>
+		<Column Name="end_time" Type="int_4s"/>
+		<Stream Name="segment:table" Delimiter="," Type="Local">
+		</Stream>
+	</Table>
+</LIGO_LW>

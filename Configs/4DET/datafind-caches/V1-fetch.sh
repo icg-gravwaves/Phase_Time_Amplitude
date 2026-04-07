@@ -1,0 +1,1 @@
+gw_data_find --observatory V --type HoftAR1 --gps-start-time 1397915979 --gps-end-time 1399125676 --url-type file > v1.lcf
