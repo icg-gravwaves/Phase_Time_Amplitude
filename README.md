@@ -70,10 +70,10 @@ The files we generated and used in the searches presented in the paper are;
 
 Modified;
 
-- HV: [Download](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/HV_Samples_Mod.hdf)
-
-- HL: [Download](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/LH_Samples_Mod.hdf)
- 
-- LV: [Download](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/LV_Samples_Mod.hdf)
+- HV: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/HV_Samples_Mod.hdf)
+- 
+- HL: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LH_Samples_Mod.hdf)
+- 
+- LV: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LV_Samples_Mod.hdf)
 
 
