@@ -47,4 +47,22 @@ Below are separate instructions for each case:
 - [3 Detector search setup](./3DET.md)
 - [4 Detector search setup](./4DET.md)
 
+# Plotting
 
+Here I will cover all the plots shown in the paper and how they were created.
+
+[Log Signal-ratio](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/signal_ratio.ipynb): This takes the output of the modified sampler as well as the output of the original histogram sampler (https://github.com/gwastro/pycbc/blob/master/bin/all_sky_search/pycbc_dtphase) and plots the distribution of the signal ratio in both cases.
+
+[Uncertainty correlations](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Uncertainty_Modelling/uncertainties.ipynb): This simulates a bunch of GW signals, performs a matched-filter search and performs statistical tests on the uncertainities measured.
+
+[4det Backgrounds](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Backgrounds.ipynb): This takes some outputs of the 4 det search and plots the backgrounds of all multi-ifo combinations. Memebers of LIGO should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here.
+
+[4det Found/Missed](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Found_missed.ipynb): This takes some outputs of the 4 det search and plots the distributions of found and missed injections. Memebers of LVK should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here.
+
+[File_size](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/File_size.ipynb): This compares the file sizes for the two different methodologies, to run this you will need output files for the two methodologies.
+
+[Appendix Amplitude Distribution](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Appendix_amplitude_dist.ipynb): This just shows the distributions of amplitudes due to our inclusions of distance. No files are required to run this.
+
+[Appendix ML training](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Flow_training.ipynb): This produces corner plots comparing the distribution learned by the flow to the training data. To run this you will need both the smaples the NF was trained on as well as the output file from the ML-training script.
+
+[Cost](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Cost.ipynb): This produces a comparison of the runtimes of the two different methodogies. 
