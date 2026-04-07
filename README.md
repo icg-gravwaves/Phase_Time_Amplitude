@@ -65,4 +65,13 @@ Here I will cover all the plots shown in the paper and how they were created.
 
 [Appendix ML training](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Flow_training.ipynb): This produces corner plots comparing the distribution learned by the flow to the training data. To run this you will need both the smaples the NF was trained on as well as the output file from the ML-training script.
 
-[Cost](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Cost.ipynb): This produces a comparison of the runtimes of the two different methodogies. 
+[Cost](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Cost.ipynb): This produces a comparison of the runtimes of the two different methodogies. The times we used from our test can be found here:
+
+[Original_2DET](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Timing_results/timing_results_Original_2DET.csv)
+
+[Original_3DET](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Timing_results/timing_results_Original_3DET.csv)
+
+[FLOW_2DET](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Timing_results/timing_results_Flow_2DET.csv)
+
+[FLOW_3DET](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Timing_results/timing_results_Flow_3DET.csv)
+
