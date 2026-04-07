@@ -37,6 +37,7 @@ With this requiring the output file from the sampler as its only argument. An ad
 All searches were run on the Caltech cluster as part of the LIGO data grid, these have substantial computing requirements and would not be able to be run on a laptop. A full initial search was performed on the data chunks to get the "ORIGINAL" results, this was done using the PyCBC 2.3.14 release branch. Once this is completed you can then rerun the backend of the search with the statistic adjustments made during this paper, for this you will want to make sure you reuse all the "INSPIRAL" outputs, as these take a considerable time to run. For this step, we used modified PyCBC branches which can be found here;
 
 Modified run: https://github.com/SamInsley/pycbc/tree/Modified
+
 Normalizing Flow run: https://github.com/SamInsley/pycbc/tree/PTA
 
 We aim to merge a version of this into the main PyCBC branch which will allow you to choose between the histogram-based and Normalizing Flow methodologies.
@@ -46,5 +47,33 @@ Below I will go through the configurations used to run both the 3 and 4 detector
 ---
 
 # 3 Detector
+
+The workflow can be submitted through using this following script
+
+[run.sh](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/run.sh)
+
+This requires the following config files;
+
+[data_O4_HLV_C00_AR.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/data_O4_HLV_C00_AR.ini)
+
+[gps_times_chunk35.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/gps_times_chunk35.ini)
+
+[injections_chunk35.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/injections_chunk35.ini)
+
+In addition for the statistic adjustment reruns you will need to downlaoded and edit the following files, replacing the statistic files with the ones generated using the method above. 
+
+[analysis.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/analysis.ini)
+
+[analysis_HLV.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/analysis_HLV.ini)
+
+The files we generated and used in the searches presented in the paper are;
+
+Modified;
+
+- HV: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/HV_Samples_Mod.hdf)
+
+- HL: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LH_Samples_Mod.hdf)
+ 
+- LV: [Download](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LV_Samples_Mod.hdf)
 
 
