@@ -36,36 +36,48 @@ Similarly to the 3 detector case, you will need to change the statistic files in
 
 The files we generated and used in the searches presented in the paper are;
 
-- [HV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_H1V1_FLOW.h5)
+- [HV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1_FLOW.h5)
  
-- [HL](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1H1_FLOW.h5)
+- [HL](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1_FLOW.h5)
  
-- [LV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1V1_FLOW.h5)
+- [LV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1_FLOW.h5)
 
-- [HK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_H1V1_FLOW.h5)
+- [HK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1K1_FLOW.h5)
  
-- [LK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1H1_FLOW.h5)
+- [LK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1K1_FLOW.h5)
  
-- [VK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1V1_FLOW.h5)
+- [VK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_V1K1_FLOW.h5)
 
-- [HLV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
+- [HLV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
 
-In addition statitsic corrrections are need alongside these to ensure consistent normalization.
+- [HLK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1L1K1_FLOW.h5)
 
-Modified;
+- [HVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1K1_FLOW.h5)
 
-HV: -1.368
+- [LVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1K1_FLOW.h5)
 
-HL: -0.659
+- [HLVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1K1_FLOW.h5)
 
-LV: -1.275
+In addition statitsic corrrections are need alongside these to ensure consistent normalization;
 
-Normlaizing Flow;
+HV: -2.200
 
-HV: -1.60
+HL: -1.06228
 
-HL: -0.997
+LV: -2.258
 
-LV: -1.399
+HK: -2.2547
 
-HLV:  -1.17
+LK: -2.0959
+
+VK: -2.2361
+
+HLV:  -0.6437
+
+HLK: -0.91869
+
+HVK: -1.9396
+
+LVK: -1.19984
+
+HLVK: -1.7987
