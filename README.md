@@ -60,7 +60,7 @@ This requires the following config files;
 
 [injections_chunk35.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/injections_chunk35.ini)
 
-In addition for the statistic adjustment reruns you will need to downlaoded and edit the following files, replacing the statistic files with the ones generated using the method above. 
+In addition, for the statistic adjustment reruns you will need to downlaoded and edit the following files, replacing the statistic files with the ones generated using the method above. 
 
 [analysis.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/analysis.ini)
 
