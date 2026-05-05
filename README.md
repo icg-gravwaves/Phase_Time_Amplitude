@@ -53,7 +53,7 @@ Here I will cover all the plots shown in the paper and how they were created.
 
 [Log Signal-ratio](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/signal_ratio.ipynb): This takes the output of the modified sampler as well as the output of the original histogram sampler (https://github.com/gwastro/pycbc/blob/master/bin/all_sky_search/pycbc_dtphase) and plots the distribution of the signal ratio in both cases.
 
-[Uncertainty correlations](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Uncertainty_Modelling/uncertainties.ipynb): This simulates a bunch of GW signals, performs a matched-filter search and performs statistical tests on the uncertainities measured.
+[Uncertainty correlations](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Uncertainty_Modelling/Uncertainties.ipynb): This simulates a bunch of GW signals, performs a matched-filter search and performs statistical tests on the uncertainities measured. This uses the helper script [Helper](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Uncertainty_Modelling/uncertainties_utilities.py).
 
 [4det Backgrounds](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Backgrounds.ipynb): This takes some outputs of the 4 det search and plots the backgrounds of all multi-ifo combinations. Members of LIGO should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here. This uses the code found in the PyCBC executable pycbc_page_fars_vs_stat so can simialrly be generated using this. (https://github.com/gwastro/pycbc/blob/master/bin/plotting/pycbc_page_fars_vs_stat)
 
