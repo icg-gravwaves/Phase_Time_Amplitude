@@ -55,9 +55,9 @@ Here I will cover all the plots shown in the paper and how they were created.
 
 [Uncertainty correlations](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Uncertainty_Modelling/uncertainties.ipynb): This simulates a bunch of GW signals, performs a matched-filter search and performs statistical tests on the uncertainities measured.
 
-[4det Backgrounds](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Backgrounds.ipynb): This takes some outputs of the 4 det search and plots the backgrounds of all multi-ifo combinations. Memebers of LIGO should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here.
+[4det Backgrounds](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Backgrounds.ipynb): This takes some outputs of the 4 det search and plots the backgrounds of all multi-ifo combinations. Memebers of LIGO should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here. This can similarly be run using the PyCBC executable pycbc_page_fars_vs_stat.
 
-[4det Found/Missed](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Found_missed.ipynb): This takes some outputs of the 4 det search and plots the distributions of found and missed injections. Memebers of LVK should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here.
+[4det Found/Missed](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/Found_missed.ipynb): This takes some outputs of the 4 det search and plots the distributions of found and missed injections. Members of LVK should be able to run this on the Caltech cluster, otherwise you can reuqest the files and we would be happy to provide as they are too large to include here. This can similarly be run using the PyCBC executable pycbc_page_foundmissed.
 
 [File_size](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Plotting/File_size.ipynb): This compares the file sizes for the two different methodologies, to run this you will need output files for the two methodologies.
 
