@@ -22,21 +22,21 @@ The stat files we generated and used in the searches presented in the paper are;
 
 Modified;
 
-- [HV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/HV_Samples_Mod.hdf)
- 
-- [HL](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LH_Samples_Mod.hdf)
- 
-- [LV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/LV_Samples_Mod.hdf)
+- [HV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/HV_Samples_Mod.hdf)
+
+- [HL](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/LH_Samples_Mod.hdf)
+
+- [LV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/LV_Samples_Mod.hdf)
 
 Normalizing Flow;
 
-- [HV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_H1V1_FLOW.h5)
- 
-- [HL](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1H1_FLOW.h5)
- 
-- [LV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1V1_FLOW.h5)
+- [HV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/PHASE_TIME_AMP_H1V1_FLOW.h5)
 
-- [HLV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
+- [HL](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/PHASE_TIME_AMP_L1H1_FLOW.h5)
+
+- [LV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/PHASE_TIME_AMP_L1V1_FLOW.h5)
+
+- [HLV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
 
 In addition statitsic corrrections are need alongside these to ensure consistent normalization.
 
