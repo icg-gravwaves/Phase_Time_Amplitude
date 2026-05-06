@@ -10,13 +10,12 @@ This requires the following config files;
 
 [minimal_injections.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/minimal_injections.ini)
 
-<!--
-
 [executables_common.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_common.ini)
-
+<!--
 [executables_for_scitokens.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_for_scitokens.ini)
 
 [executables_osg.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_osg.ini)
+-->
 
 [inspiral.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/inspiral.ini)
 
@@ -25,8 +24,6 @@ This requires the following config files;
 [analysis.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/analysis.ini)
 
 [analysis_HLVK.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/analysis_HLVK.ini)
-
--->
 
 In addition there are several sections that point to files the user may not be able to access such as `[workflow-segments-k1]`. These files can be downloaded here then you will need to change the configuration file to redirect to them.
 
