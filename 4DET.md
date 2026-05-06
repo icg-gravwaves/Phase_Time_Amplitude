@@ -1,8 +1,7 @@
 # 4 Detector
 
-The workflow can be submitted through using this following script
+The workflow can be submitted through using The workflow can be submitted through using `pycbc_make_offline_search_workflow`.
 
-[run.sh](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/run.sh)
 
 This requires the following config files;
 
