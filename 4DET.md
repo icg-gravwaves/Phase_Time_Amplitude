@@ -1,6 +1,6 @@
 # 4 Detector
 
-The workflow can be submitted through using The workflow can be submitted through using `pycbc_make_offline_search_workflow`.
+The workflow can be submitted through using The workflow can be submitted through using `pycbc_make_offline_search_workflow`. See [Here](https://pycbc.org/pycbc/latest/html/workflow/pycbc_make_offline_search_workflow.html) for more information on how to run this.
 
 This requires the following config files;
 
