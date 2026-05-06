@@ -40,7 +40,7 @@ In addition there are several sections that point to files the user may not be a
 
 [k1-vetoes.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1_vetoes.xml)
 
-A lot of these are set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools may need some changes to use GWOSC to access them. The reader may find [4-OGC: Catalog of gravitational waves from compact-binary mergers](https://github.com/gwastro/4-ogc) helpful if neeeding to make these changes.
+A lot of these are also set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools may need some changes to use GWOSC to access them. The reader may find [4-OGC: Catalog of gravitational waves from compact-binary mergers](https://github.com/gwastro/4-ogc) helpful if neeeding to make these changes.
 
 Similarly to the 3 detector case, you will need to change the statistic files in the analysis.ini and analysis_HLVK.ini files when rerunning for the statistic adjustments.
 
