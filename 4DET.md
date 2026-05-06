@@ -34,11 +34,11 @@ In addition there are several sections that point to files the user may not be a
 
 [DQ-dummy-file.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/DQ-dummy-file.xml)
 
-[k1-science.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1-science.xml)
+[k1-science.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1_science.xml)
 
-[k1-segments.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1-segments.xml)
+[k1-segments.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1_segments.xml)
 
-[k1-vetoes.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1-vetoes.xml)
+[k1-vetoes.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff/k1_vetoes.xml)
 
 A lot of these are set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools may need some changes to use GWOSC to access them. The reader may find [4-OGC: Catalog of gravitational waves from compact-binary mergers](https://github.com/gwastro/4-ogc) helpful if neeeding to make these changes.
 
