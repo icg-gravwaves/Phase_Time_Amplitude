@@ -24,9 +24,6 @@ This requires the following config files;
 
 [analysis_HLVK.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/analysis_HLVK.ini)
 
-and cache file:
-
-[reuse_banks.cache](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/reuse_banks.cache)
 
 In addition there are several sections that point to files the user may not be able to access such as `[workflow-segments-k1]`. These files can be downloaded here then you will need to change the configuration file to redirect to them.
 
