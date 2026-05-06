@@ -1,5 +1,7 @@
 # Normalizing Flows for Density Estimation in Multi-Detector Gravitational-Wave Searches
 
+# This data release is still being worked on and updated
+
 This is the data release for the paper "Normalizing Flows for Density Estimation in Multi-Detector Gravitational-Wave Searches" [Paper](https://arxiv.org/abs/2604.26581). In this paper we have demonstrated the use of a machine learning approach to density estimation, called normalizing flows as an alternative to histogram-based estimators used within PyCBC searches for compact binary coalescences. We release the code used to produce both the results and plots found in the paper. We aim to merge a version of the normalizing flow into the PyCBC main branch in the near future, but currently if you want to replicate the results you will need to use the scripts outlined here.
 
 # Sampling
