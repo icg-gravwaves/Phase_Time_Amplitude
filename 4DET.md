@@ -2,7 +2,6 @@
 
 The workflow can be submitted through using The workflow can be submitted through using `pycbc_make_offline_search_workflow`.
 
-
 This requires the following config files;
 
 [data_O4_HLVK_C00_AR.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/data_O4_HLVK_C00_AR.ini)
@@ -21,15 +20,15 @@ This requires the following config files;
 
 [plotting.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/plotting.ini)
 
-[reuse_banks.cache](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/reuse_banks.cache)
-
-[DQ-dummy-file.xml](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/DQ-dummy-file.xml)
-
-[VDF.xml](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/VDF.xml)
-
 [analysis.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/analysis.ini)
 
 [analysis_HLVK.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/analysis_HLVK.ini)
+
+and cache file
+
+[reuse_banks.cache](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/reuse_banks.cache)
+
+A lot of these are set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools need some changes to use GWOSC to access them.
 
 Similarly to the 3 detector case, you will need to change the statistic files in the analysis.ini and analysis_HLVK.ini files when rerunning for the statistic adjustments.
 
