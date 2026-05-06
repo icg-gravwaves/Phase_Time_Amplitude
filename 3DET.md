@@ -1,22 +1,8 @@
 # 3 Detector
 
-The workflow can be submitted through using `pycbc_make_offline_search_workflow`.
+#Work in Progress
 
-This requires the following config files;
-
-[data_O4_HLV_C00_AR.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/data_O4_HLV_C00_AR.ini)
-
-[gps_times_chunk35.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/gps_times_chunk35.ini)
-
-[injections_chunk35.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/injections_chunk35.ini)
-
-In addition, for the statistic adjustment reruns you will need to downlaoded and edit the following files, replacing the statistic files with the ones generated using the method above. 
-
-[analysis.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/analysis.ini)
-
-[analysis_HLV.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/3DET/analysis_HLV.ini)
-
-The files we generated and used in the searches presented in the paper are;
+The stat files we generated and used in the searches presented in the paper are;
 
 Modified;
 
