@@ -1,6 +1,6 @@
 # Normalizing Flows for Density Estimation in Multi-Detector Gravitational-Wave Searches
 
-This is the data release for the paper "Normalizing Flows for Density Estimation in Multi-Detector Gravitational-Wave Searches" [Paper](https://arxiv.org/abs/2604.26581). In this paper we have demonstrated the use of a machine learning approach to density estimation, called normalizing flows as an alternative to histogram-based estimators used within PyCBC searches for compact binary coalescences. We release the code used to produce both the results and plots found in the paper.
+This is the data release for the paper "Normalizing Flows for Density Estimation in Multi-Detector Gravitational-Wave Searches" [Paper](https://arxiv.org/abs/2604.26581). In this paper we have demonstrated the use of a machine learning approach to density estimation, called normalizing flows as an alternative to histogram-based estimators used within PyCBC searches for compact binary coalescences. We release the code used to produce both the results and plots found in the paper. We aim to merge a version of the normalizing flow into the PyCBC main branch in the near future, but currently if you want to replicate the results you will need to use the scripts outlined here.
 
 # Sampling
 
@@ -8,7 +8,7 @@ In this project we relaxed  a number of simplifying assumptions in the current M
 
 [Modified Sampler](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_sampling_MODIFIED.py)
 
-This was used to produce the MODIFIED data set presented in the paper. For the search we ran, we required a sample size of 100,000,000. This may be better off run on 100 separate jobs then combing the resulting hdf files.
+This was used to produce the MODIFIED data set presented in the paper. For the search we ran, we required a sample size of 100,000,000. This may be better off run on 100 separate jobs then combing the resulting hdf files. You can find the output files we used in the [3 Detector search setup](./3DET.md).
 
 ---
 
@@ -16,7 +16,7 @@ A number of additional changes were included for these samples to then train a n
 
 [Flow Sampler](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Sampling/PTA_samples.py)
 
-This was used to produce the FLOW data set presented in the paper. For 2 and 3 detector cases we found 500,000 samples were sufficient for training the normalizing flow.
+This was used to train the normalizing flow which produces the FLOW data set presented in the paper. For 2 and 3 detector cases we found 500,000 samples were sufficient for training the normalizing flow.
 
 ---
 
@@ -32,9 +32,11 @@ With this requiring the output file from the sampler as its only argument. An ad
 
 [Normalizing Flow Stat File](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Normalizing_Flow/ml_stat.py)
 
+Here you can find the output files we used for both the [3 Detector search setup](./3DET.md) and [4 Detector search setup](./4DET.md).
+
 # Searches
 
-All searches were run on the Caltech cluster as part of the LIGO data grid, these have substantial computing requirements and would not be able to be run on a laptop. A full initial search was performed on the data chunks to get the "ORIGINAL" results, this was done using the PyCBC 2.3.14 release branch. Once this is completed you can then rerun the backend of the search with the statistic adjustments made during this paper, for this you will want to make sure you reuse all the "INSPIRAL" outputs, as these take a considerable time to run. For this step, we used modified PyCBC branches which can be found here;
+All searches were run on the Caltech cluster as part of the LIGO data grid, these have substantial computing requirements and would not be able to be run on a laptop. A full initial search was performed on the data chunks to get the "ORIGINAL" results, this was done using the PyCBC 2.3.14 release. Once this is completed you can then rerun the backend of the search with the statistic adjustments made during this paper, for this you will want to make sure you reuse all the "INSPIRAL" outputs, as these take a considerable time to run. For this step, we used modified PyCBC branches which can be found here;
 
 Modified run: https://github.com/SamInsley/pycbc/tree/Modified
 
