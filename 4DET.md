@@ -28,6 +28,12 @@ and cache file:
 
 [reuse_banks.cache](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/reuse_banks.cache)
 
+In addition there are several sections that point to files the user may not be able to access such as `[workflow-segments-k1]`. These files can be downloaded here then you will need to change the configuration file to redirect to them.
+
+[VDF.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/VDF.xml)
+[DQ-dummy-file.xml](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/DQ-dummy-file.xml)
+[extra-stuff](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/extra-stuff)
+
 A lot of these are set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools may need some changes to use GWOSC to access them. The reader may find [4-OGC: Catalog of gravitational waves from compact-binary mergers](https://github.com/gwastro/4-ogc) helpful if neeeding to make these changes.
 
 Similarly to the 3 detector case, you will need to change the statistic files in the analysis.ini and analysis_HLVK.ini files when rerunning for the statistic adjustments.
