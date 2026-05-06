@@ -44,7 +44,7 @@ Modified run: https://github.com/SamInsley/pycbc/tree/Modified
 
 Normalizing Flow run: https://github.com/SamInsley/pycbc/tree/PTA
 
-We aim to merge a version of this into the main PyCBC branch which will allow you to choose between the histogram-based and Normalizing Flow methodologies.
+You will need to create a copy of these branches and install them into your envirnoment when rerunning the backend of the search. If you need help doing this we refer the reader to this [Guide](https://pycbc.org/pycbc/latest/html/install.html). We aim to merge a version of this into the main PyCBC branch which will allow you to choose between the histogram-based and Normalizing Flow methodologies.
 
 Below are separate instructions for each case:
 
