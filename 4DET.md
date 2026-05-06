@@ -4,29 +4,29 @@ The workflow can be submitted through using The workflow can be submitted throug
 
 This requires the following config files;
 
-[data_O4_HLVK_C00_AR.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/data_O4_HLVK_C00_AR.ini)
+[data_O4_HLVK_C00_AR.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/data_O4_HLVK_C00_AR.ini)
 
-[gps_times_chunk18.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/gps_times_chunk18.ini)
+[gps_times_chunk18.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/gps_times_chunk18.ini)
 
-[minimal_injections.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/minimal_injections.ini)
+[minimal_injections.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/minimal_injections.ini)
 
-[executables_common.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/executables_common.ini)
+[executables_common.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_common.ini)
 
-[executables_for_scitokens.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/executables_for_scitokens.ini)
+[executables_for_scitokens.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_for_scitokens.ini)
 
-[executables_osg.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/executables_osg.ini)
+[executables_osg.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/executables_osg.ini)
 
-[inspiral.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/inspiral.ini)
+[inspiral.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/inspiral.ini)
 
-[plotting.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/plotting.ini)
+[plotting.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/plotting.ini)
 
-[analysis.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/analysis.ini)
+[analysis.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/analysis.ini)
 
-[analysis_HLVK.ini](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/analysis_HLVK.ini)
+[analysis_HLVK.ini](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/analysis_HLVK.ini)
 
-and cache file
+and cache file:
 
-[reuse_banks.cache](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Configs/4DET/reuse_banks.cache)
+[reuse_banks.cache](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Configs/4DET/reuse_banks.cache)
 
 A lot of these are set up to use LIGO resources, so in their current form will only be able to be run by those who are a memeber of LIGO. These data are the same as those available from GWOSC, but the PyCBC tools need some changes to use GWOSC to access them.
 
@@ -34,27 +34,27 @@ Similarly to the 3 detector case, you will need to change the statistic files in
 
 The files we generated and used in the searches presented in the paper are;
 
-- [HV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1_FLOW.h5)
- 
-- [HL](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1_FLOW.h5)
- 
-- [LV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1_FLOW.h5)
+- [HV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1_FLOW.h5)
 
-- [HK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1K1_FLOW.h5)
- 
-- [LK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1K1_FLOW.h5)
- 
-- [VK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_V1K1_FLOW.h5)
+- [HL](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1_FLOW.h5)
 
-- [HLV](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
+- [LV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1_FLOW.h5)
 
-- [HLK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1L1K1_FLOW.h5)
+- [HK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_H1K1_FLOW.h5)
 
-- [HVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1K1_FLOW.h5)
+- [LK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1K1_FLOW.h5)
 
-- [LVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1K1_FLOW.h5)
+- [VK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_V1K1_FLOW.h5)
 
-- [HLVK](https://github.com/icg-gravwaves/Phase_Time_Amplitude/blob/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1K1_FLOW.h5)
+- [HLV](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1_FLOW.h5)
+
+- [HLK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_H1L1K1_FLOW.h5)
+
+- [HVK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_H1V1K1_FLOW.h5)
+
+- [LVK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1V1K1_FLOW.h5)
+
+- [HLVK](https://raw.githubusercontent.com/icg-gravwaves/Phase_Time_Amplitude/main/Statistic_Files/4det/PHASE_TIME_AMP_L1H1V1K1_FLOW.h5)
 
 In addition statitsic corrrections are need alongside these to ensure consistent normalization;
 
